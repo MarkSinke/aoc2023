@@ -73,3 +73,13 @@ func CanPlayWith(red int, green int, blue int, gameResult GameResult) bool {
 	}
 	return true
 }
+
+func MinPower(gameResult GameResult) int {
+	red, green, blue := 0, 0, 0
+	for _, res := range gameResult.results {
+		red = max(red, res.red)
+		green = max(green, res.green)
+		blue = max(blue, res.blue)
+	}
+	return red * blue * green
+}
