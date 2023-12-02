@@ -1,0 +1,29 @@
+package aoc2023
+
+import (
+	"fmt"
+	"testing"
+)
+
+func TestDay1Example(t *testing.T) {
+	sum := ComputeCalibrationSum(t, "day1input_example.txt")
+	if sum != 142 {
+		t.Errorf("expected 142, but got %d", sum)
+	}
+}
+
+func ComputeCalibrationSum(t *testing.T, filename string) int {
+	lines, err := ReadFile(filename)
+	if err != nil {
+		t.Fatal("input file cannot be read")
+	}
+	sum := 0
+	for _, str := range lines {
+		sum += CalibrationValue(FirstAndLastDigit(str))
+	}
+	return sum
+}
+
+func TestDay1Input(t *testing.T) {
+	fmt.Printf("Day 1 result: %d\n", ComputeCalibrationSum(t, "day1input.txt"))
+}
