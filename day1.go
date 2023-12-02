@@ -72,10 +72,8 @@ var textToValue = map[string]int{
 }
 
 func FirstAndLastDigitWithWords(line string) (int, int) {
-	println(line)
 	first := digitRegex.FindString(line)
 	last := digitRegexRev.FindString(Reverse(line))
-	println(first, last)
 	return textToValue[first], textToValue[last]
 }
 
