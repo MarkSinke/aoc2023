@@ -29,7 +29,17 @@ func FirstAndLastDigit(line string) (string, string) {
 	return firstDigit, lastDigit
 }
 
-var digitRegex = regexp.MustCompile("0|1|2|3|4|5|6|7|8|9|one|two|three|four|five|six|seven|eight|nine")
+func Reverse(str string) string {
+	chars := []rune(str)
+	for i, j := 0, len(chars)-1; i < j; i, j = i+1, j-1 {
+		chars[i], chars[j] = chars[j], chars[i]
+	}
+	return string(chars)
+}
+
+var regexString = "0|1|2|3|4|5|6|7|8|9|one|two|three|four|five|six|seven|eight|nine"
+var digitRegex = regexp.MustCompile(regexString)
+var digitRegexRev = regexp.MustCompile(Reverse(regexString))
 var textToValue = map[string]int{
 	"0":     0,
 	"1":     1,
@@ -42,20 +52,29 @@ var textToValue = map[string]int{
 	"8":     8,
 	"9":     9,
 	"one":   1,
+	"eno":   1,
 	"two":   2,
+	"owt":   2,
 	"three": 3,
+	"eerht": 3,
 	"four":  4,
+	"ruof":  4,
 	"five":  5,
+	"evif":  5,
 	"six":   6,
+	"xis":   6,
 	"seven": 7,
+	"neves": 7,
 	"eight": 8,
+	"thgie": 8,
 	"nine":  9,
+	"enin":  9,
 }
 
 func FirstAndLastDigitWithWords(line string) (int, int) {
 	println(line)
-	matches := digitRegex.FindAllString(line, -1)
-	first, last := matches[0], matches[len(matches)-1]
+	first := digitRegex.FindString(line)
+	last := digitRegexRev.FindString(Reverse(line))
 	println(first, last)
 	return textToValue[first], textToValue[last]
 }

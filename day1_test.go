@@ -44,10 +44,19 @@ func ComputeCalibrationSumWordAware(t *testing.T, filename string) int {
 func TestDay1Example2(t *testing.T) {
 	sum := ComputeCalibrationSumWordAware(t, "day1input_example2.txt")
 	if sum != 281 {
-		t.Errorf("expected 142, but got %d", sum)
+		t.Errorf("expected 281, but got %d", sum)
 	}
 }
 
 func TestDay1InputStar2(t *testing.T) {
 	fmt.Printf("Day 1 result (star 2): %d\n", ComputeCalibrationSumWordAware(t, "day1input.txt"))
+}
+
+func TestReverse(t *testing.T) {
+	str := "This is a test"
+	reversed := Reverse(str)
+	expected := "tset a si sihT"
+	if reversed != expected {
+		t.Errorf("expected %s, but got %s", expected, reversed)
+	}
 }
