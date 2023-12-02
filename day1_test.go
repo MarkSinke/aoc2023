@@ -2,7 +2,6 @@ package aoc2023
 
 import (
 	"fmt"
-	"strings"
 	"testing"
 )
 
@@ -35,9 +34,9 @@ func ComputeCalibrationSumWordAware(t *testing.T, filename string) int {
 		t.Fatal("input file cannot be read")
 	}
 	sum := 0
-	replacer := strings.NewReplacer("one", "1", "two", "2", "three", "3", "four", "4", "five", "5", "six", "6", "seven", "7", "eight", "8", "nine", "9")
 	for _, str := range lines {
-		sum += CalibrationValue(FirstAndLastDigit(replacer.Replace(str)))
+		first, last := FirstAndLastDigitWithWords(str)
+		sum += first*10 + last
 	}
 	return sum
 }
