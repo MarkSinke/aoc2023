@@ -1,6 +1,7 @@
 package aoc2023
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -19,9 +20,7 @@ func TestDay2Input(t *testing.T) {
 
 	sum := sumIdsPlayable(gameResults)
 
-	if sum != 8 {
-		t.Errorf("expected 8, but got %v", sum)
-	}
+	fmt.Printf("Day 2 result (star 1): %d\n", sum)
 }
 
 func sumIdsPlayable(gameResults []GameResult) int {
