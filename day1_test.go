@@ -13,10 +13,8 @@ func TestDay1Example(t *testing.T) {
 }
 
 func ComputeCalibrationSum(t *testing.T, filename string) int {
-	lines, err := ReadFile(filename)
-	if err != nil {
-		t.Fatal("input file cannot be read")
-	}
+	lines := ReadFile(filename)
+
 	sum := 0
 	for _, str := range lines {
 		sum += CalibrationValue(FirstAndLastDigit(str))
@@ -29,10 +27,8 @@ func TestDay1Input(t *testing.T) {
 }
 
 func ComputeCalibrationSumWordAware(t *testing.T, filename string) int {
-	lines, err := ReadFile(filename)
-	if err != nil {
-		t.Fatal("input file cannot be read")
-	}
+	lines := ReadFile(filename)
+
 	sum := 0
 	for _, str := range lines {
 		first, last := FirstAndLastDigitWithWords(str)

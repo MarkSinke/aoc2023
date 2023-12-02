@@ -8,12 +8,12 @@ import (
 	"unicode"
 )
 
-func ReadFile(path string) ([]string, error) {
+func ReadFile(path string) []string {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, err
+		panic("cannot read file " + path)
 	}
-	return strings.Split(string(data), "\n"), nil
+	return strings.Split(string(data), "\n")
 }
 
 func FirstAndLastDigit(line string) (string, string) {
