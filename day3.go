@@ -18,11 +18,27 @@ type NumberCoord struct {
 	y      int
 }
 
-// coordinate set, implemted as a map to 0-sized structs
-type CoordSet map[Coord]struct{}
+func (n NumberCoord) touching(xy Coord) bool {
+	if xy.y < n.y-1 {
+		return false // above
+	}
+	if xy.y > n.y+1 {
+		return false // below
+	}
+	if xy.x < n.xMin-1 {
+		return false // left
+	}
+	if xy.x > n.xMax {
+		return false // right (xMax is first index after the number, so no need to +1 even more)
+	}
+	return true
+}
 
-func (s CoordSet) add(xy Coord) {
-	s[xy] = struct{}{}
+// coordinate set, implemted as a map to 0-sized structs
+type CoordSet map[Coord]rune
+
+func (s CoordSet) add(xy Coord, r rune) {
+	s[xy] = r
 }
 
 func (s CoordSet) remove(xy Coord) {
@@ -34,12 +50,22 @@ func (s CoordSet) has(xy Coord) bool {
 	return ok
 }
 
+func (s CoordSet) findAll(r rune) []Coord {
+	var coords []Coord
+	for coord, rune := range s {
+		if rune == r {
+			coords = append(coords, coord)
+		}
+	}
+	return coords
+}
+
 func GetSymbolCoordSet(engine []string) CoordSet {
 	coords := CoordSet{}
 	for y, line := range engine {
 		for x, rune := range line {
 			if !unicode.IsDigit(rune) && rune != '.' {
-				coords.add(Coord{x, y})
+				coords.add(Coord{x, y}, rune)
 			}
 		}
 	}
@@ -91,4 +117,14 @@ func sum(ints []int) int {
 		sum += val
 	}
 	return sum
+}
+
+func FindConnectedNumbers(coord Coord, numbers []NumberCoord) []NumberCoord {
+	var result []NumberCoord
+	for _, num := range numbers {
+		if num.touching(coord) {
+			result = append(result, num)
+		}
+	}
+	return result
 }
