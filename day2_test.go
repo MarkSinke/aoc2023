@@ -55,7 +55,6 @@ func sumMinPowers(gameResults []GameResult) int {
 	sum := 0
 	for _, res := range gameResults {
 		sum += MinPower(res)
-
 	}
 	return sum
 }
