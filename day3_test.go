@@ -8,7 +8,7 @@ import (
 func TestDay3InputExample(t *testing.T) {
 	engine := ReadFile("day3input_example.txt")
 	parts := GetPartNumbers(engine)
-	sum := sum(parts)
+	sum := Sum(parts)
 
 	if sum != 4361 {
 		t.Errorf("expected 4361, but got %d", sum)
@@ -18,7 +18,7 @@ func TestDay3InputExample(t *testing.T) {
 func TestDay3Input(t *testing.T) {
 	engine := ReadFile("day3input.txt")
 	parts := GetPartNumbers(engine)
-	sum := sum(parts)
+	sum := Sum(parts)
 
 	fmt.Printf("Day 3 result (star 1): %d\n", sum)
 }

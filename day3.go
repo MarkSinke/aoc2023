@@ -111,7 +111,7 @@ func isSymbolClose(num NumberCoord, symbols CoordSet) bool {
 	return false
 }
 
-func sum(ints []int) int {
+func Sum(ints []int) int {
 	sum := 0
 	for _, val := range ints {
 		sum += val

@@ -13,18 +13,26 @@ type GameCard struct {
 
 func (g GameCard) Score() int {
 	score := 0
-	for _, num := range g.numbers {
-		for _, win := range g.winningNumbers {
-			if win == num {
-				if score == 0 {
-					score = 1
-				} else {
-					score = score * 2
-				}
-			}
+	for matches := g.Matches(); matches != 0; matches-- {
+		if score == 0 {
+			score = 1
+		} else {
+			score = score * 2
 		}
 	}
 	return score
+}
+
+func (g GameCard) Matches() int {
+	res := 0
+	for _, num := range g.numbers {
+		for _, win := range g.winningNumbers {
+			if win == num {
+				res++
+			}
+		}
+	}
+	return res
 }
 
 var gameCardRegex = regexp.MustCompile("Card +(\\d+): ([\\d ]+) \\| ([\\d ]+)")
@@ -58,4 +66,20 @@ func parseNumList(str string) []int {
 		res = append(res, num)
 	}
 	return res
+}
+
+func ComputeCardCounts(cards []GameCard) []int {
+	cardCounts := make([]int, len(cards))
+	for i := range cardCounts {
+		cardCounts[i] = 1
+	}
+
+	for i, card := range cards {
+		matches := card.Matches()
+		for matchCard := i + 1; matchCard < i+1+matches; matchCard++ {
+			cardCounts[matchCard] += cardCounts[i]
+		}
+	}
+
+	return cardCounts
 }
