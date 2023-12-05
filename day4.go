@@ -50,14 +50,14 @@ func ReadGameCards(path string) []GameCard {
 
 func parseCard(idStr string, winningNumStr string, numStr string) GameCard {
 	id, _ := strconv.Atoi(idStr)
-	winningNumbers := parseNumList(winningNumStr)
-	numbers := parseNumList(numStr)
+	winningNumbers := ParseNumList(winningNumStr)
+	numbers := ParseNumList(numStr)
 	return GameCard{id, winningNumbers, numbers}
 }
 
 var numRegex = regexp.MustCompile("\\d+")
 
-func parseNumList(str string) []int {
+func ParseNumList(str string) []int {
 	nums := numRegexp.FindAllString(str, -1)
 
 	var res []int
