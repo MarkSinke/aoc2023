@@ -17,9 +17,21 @@ func (x Card) String() string {
 const cardStrings = "23456789TJQKA"
 
 func CardsFromString(str string) []Card {
+
 	var cards []Card
 	for _, r := range str {
 		card := Card(strings.IndexRune(cardStrings, r))
+		cards = append(cards, card)
+	}
+	return cards
+}
+
+const cardStringsJoker = "J23456789TQKA"
+
+func CardsFromStringJoker(str string) []Card {
+	var cards []Card
+	for _, r := range str {
+		card := Card(strings.IndexRune(cardStringsJoker, r))
 		cards = append(cards, card)
 	}
 	return cards
@@ -39,6 +51,39 @@ func getItem(m map[Card]int) (Card, int) {
 }
 
 func makeRank(cards []Card) int {
+	m := cardsToCardCounts(cards)
+
+	var counts []int = maps.Values(m)
+	// sort in highest-count first
+	slices.SortFunc(counts, func(a int, b int) int { return b - a })
+
+	return countsToRank(counts)
+}
+
+func makeRankJoker(cards []Card) int {
+	m := cardsToCardCounts(cards)
+
+	jokerCount, found := m[Card(0)]
+	if found {
+		delete(m, Card(0))
+	}
+
+	var counts []int = maps.Values(m)
+	// sort in highest-count first
+	slices.SortFunc(counts, func(a int, b int) int { return b - a })
+	if found {
+		// add jokers to highest-count card to make hand as good as possible
+		if len(counts) != 0 {
+			counts[0] += jokerCount
+		} else {
+			counts = []int{jokerCount}
+		}
+	}
+
+	return countsToRank(counts)
+}
+
+func cardsToCardCounts(cards []Card) map[Card]int {
 	m := map[Card]int{}
 
 	for _, card := range cards {
@@ -50,10 +95,10 @@ func makeRank(cards []Card) int {
 		m[card] = entry
 	}
 
-	var counts []int = maps.Values(m)
-	// sort in highest-count first
-	slices.SortFunc(counts, func(a int, b int) int { return b - a })
+	return m
+}
 
+func countsToRank(counts []int) int {
 	switch counts[0] {
 	case 5: // five of a kind
 		return 10
@@ -77,6 +122,7 @@ func makeRank(cards []Card) int {
 
 	// should not happen
 	return 0
+
 }
 
 func SortHands(hands []Hand) {
@@ -106,6 +152,22 @@ func ReadHands(path string) []Hand {
 		parts := strings.Split(line, " ")
 		cards := CardsFromString(parts[0])
 		rank := makeRank(cards)
+		bet, _ := strconv.Atoi(parts[1])
+		hands = append(hands, Hand{cards, rank, bet})
+	}
+	return hands
+}
+
+func ReadHandsJoker(path string) []Hand {
+	lines := ReadFile(path)
+	var hands []Hand
+	for _, line := range lines {
+		if line == "" {
+			continue
+		}
+		parts := strings.Split(line, " ")
+		cards := CardsFromStringJoker(parts[0])
+		rank := makeRankJoker(cards)
 		bet, _ := strconv.Atoi(parts[1])
 		hands = append(hands, Hand{cards, rank, bet})
 	}
