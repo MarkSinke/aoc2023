@@ -22,3 +22,19 @@ func TestDay9Input(t *testing.T) {
 
 	fmt.Println("Day 9 result (star 1):", res)
 }
+
+func TestDay9Star2InputExample(t *testing.T) {
+	readings := ReadOasis("day9input_example.txt")
+
+	res := SumOfHistory(readings)
+
+	assert.Equal(t, 2, res)
+}
+
+func TestDay9Star2Input(t *testing.T) {
+	readings := ReadOasis("day9input.txt")
+
+	res := SumOfHistory(readings)
+
+	fmt.Println("Day 9 result (star 2):", res)
+}

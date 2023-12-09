@@ -1,7 +1,5 @@
 package aoc2023
 
-import "fmt"
-
 func ReadOasis(path string) [][]int {
 	lines := ReadFile(path)
 
@@ -35,6 +33,16 @@ func IsAllZero(nums []int) bool {
 }
 
 func Predict(nums []int) int {
+	diffs := computeDiffs(nums)
+
+	prediction := 0
+	for _, diff := range diffs {
+		prediction += diff[len(diff)-1]
+	}
+	return prediction
+}
+
+func computeDiffs(nums []int) [][]int {
 	diffs := [][]int{}
 
 	for {
@@ -44,21 +52,31 @@ func Predict(nums []int) int {
 		}
 		nums = Diff(nums)
 	}
-
-	prediction := 0
-	for _, diff := range diffs {
-		if len(diff) == 0 {
-			fmt.Println("what?", diffs)
-		}
-		prediction += diff[len(diff)-1]
-	}
-	return prediction
+	return diffs
 }
 
 func SumOfPredictions(readings [][]int) int {
 	sum := 0
 	for _, reading := range readings {
 		sum += Predict(reading)
+	}
+	return sum
+}
+
+func history(nums []int) int {
+	diffs := computeDiffs(nums)
+
+	prediction := 0
+	for i := len(diffs) - 2; i >= 0; i-- {
+		prediction = diffs[i][0] - prediction
+	}
+	return prediction
+}
+
+func SumOfHistory(readings [][]int) int {
+	sum := 0
+	for _, reading := range readings {
+		sum += history(reading)
 	}
 	return sum
 }
