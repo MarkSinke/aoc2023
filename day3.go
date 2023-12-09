@@ -72,7 +72,7 @@ func GetSymbolCoordSet(engine []string) CoordSet {
 	return coords
 }
 
-var numRegexp = regexp.MustCompile("\\d+")
+var numRegexp = regexp.MustCompile("-?\\d+")
 
 func GetNumbers(engine []string) []NumberCoord {
 	var coords []NumberCoord

@@ -55,8 +55,6 @@ func parseCard(idStr string, winningNumStr string, numStr string) GameCard {
 	return GameCard{id, winningNumbers, numbers}
 }
 
-var numRegex = regexp.MustCompile("\\d+")
-
 func ParseNumList(str string) []int {
 	nums := numRegexp.FindAllString(str, -1)
 

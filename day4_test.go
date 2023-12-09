@@ -44,3 +44,9 @@ func TestDay4Star2Input(t *testing.T) {
 
 	fmt.Printf("Day 4 result (star 2): %v\n", total)
 }
+
+func TestNegativeNumList(t *testing.T) {
+	nums := ParseNumList("-4 17 -2")
+
+	assert.Equal(t, []int{-4, 17, -2}, nums)
+}
