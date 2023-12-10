@@ -28,3 +28,27 @@ func TestDay10Input(t *testing.T) {
 
 	fmt.Println("Day 10 result (star 1):", steps)
 }
+
+func TestDay10Star2InputExample2(t *testing.T) {
+	tiles := ReadTiles("day10input_example3.txt")
+	main := CopyMainLoop(tiles)
+	exploded := ExplodeLoop(main)
+	Fill(exploded)
+	imploded := ImplodeLoop(exploded)
+
+	in := CountIn(imploded)
+	assert.Equal(t, 8, in)
+}
+
+func TestDay10Star2Input(t *testing.T) {
+	tiles := ReadTiles("day10input.txt")
+	main := CopyMainLoop(tiles)
+	// we need to explode and implode to make sure every point outside can be reach via a path
+	// exploding makes sure such paths exist
+	exploded := ExplodeLoop(main)
+	Fill(exploded)
+	imploded := ImplodeLoop(exploded)
+
+	in := CountIn(imploded)
+	fmt.Println("Day 10 result (star 2):", in)
+}
