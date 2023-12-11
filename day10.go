@@ -316,11 +316,11 @@ func Fill(tiles [][]Tile) {
 	toCheck := []Coord{}
 
 	// check borders first
-	for x, _ := range tiles[0] {
+	for x := range tiles[0] {
 		toCheck = appendIfUndefined(tiles, toCheck, Coord{x, 0})
 		toCheck = appendIfUndefined(tiles, toCheck, Coord{x, len(tiles) - 1})
 	}
-	for y, _ := range tiles {
+	for y := range tiles {
 		toCheck = appendIfUndefined(tiles, toCheck, Coord{0, y})
 		toCheck = appendIfUndefined(tiles, toCheck, Coord{len(tiles[0]) - 1, y})
 	}
