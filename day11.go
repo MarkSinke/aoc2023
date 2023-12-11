@@ -22,15 +22,15 @@ func ReadGalaxies(path string) []Coord {
 	return coords
 }
 
-func updateCoord(xs []int, ys []int, coord Coord) Coord {
+func updateCoord(xs []int, ys []int, coord Coord, expand int) Coord {
 	i, _ := slices.BinarySearch(xs, coord.x)
 	dx := coord.x - i
 	j, _ := slices.BinarySearch(ys, coord.y)
 	dy := coord.y - j
-	return Coord{coord.x + dx, coord.y + dy}
+	return Coord{coord.x + dx*expand, coord.y + dy*expand}
 }
 
-func ExpandGalaxy(coords []Coord) []Coord {
+func ExpandGalaxy(coords []Coord, d int) []Coord {
 	xs := make([]int, 0, len(coords))
 	ys := make([]int, 0, len(coords))
 
@@ -46,7 +46,7 @@ func ExpandGalaxy(coords []Coord) []Coord {
 
 	res := make([]Coord, 0, len(coords))
 	for _, coord := range coords {
-		res = append(res, updateCoord(xs, ys, coord))
+		res = append(res, updateCoord(xs, ys, coord, d))
 	}
 
 	return res
