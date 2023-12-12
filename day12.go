@@ -99,13 +99,13 @@ func merge(res0 []MatchResult, res1 []MatchResult, max int) []MatchResult {
 var cache = map[string][]MatchResult{}
 
 func makeCacheKey(hashRun int, str string, counts []int) string {
-	builder := strings.Builder{}
+	var builder strings.Builder
 	builder.Grow(32)
-	builder.WriteRune(rune(hashRun))
+	builder.WriteByte(byte(hashRun))
 	builder.WriteString(str)
 	builder.WriteByte(':')
 	for _, count := range counts {
-		builder.WriteRune(rune(count))
+		builder.WriteByte(byte(count))
 	}
 	return builder.String()
 }
