@@ -1,6 +1,7 @@
 package aoc2023
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -19,9 +20,7 @@ func (r SpringRecord) PossibleMatches() int {
 		chunksDot = append(chunksDot, ch+".")
 	}
 
-	calls := 0
-	res := possibleMatches(&calls, chunksDot, r.counts)
-	//	fmt.Printf("(calls: %v)", calls)
+	res := possibleMatches(chunksDot, r.counts)
 	return res
 }
 
@@ -46,8 +45,7 @@ func matchesMinPattern(str string, counts []int) bool {
 	return true
 }
 
-func possibleMatches(calls *int, chunks []string, counts []int) int {
-	// fmt.Println("pm2", chunks, counts)
+func possibleMatches(chunks []string, counts []int) int {
 	if len(chunks) == 0 {
 		if len(counts) == 0 {
 			return 1
@@ -57,7 +55,6 @@ func possibleMatches(calls *int, chunks []string, counts []int) int {
 	} else if len(chunks) == 1 {
 		// final chunk - we are looking to get rid of all the counts, if it doesn't fit, it's not a match
 		degreesOfFreedom := len(chunks[0]) - minLengthForTail(counts)
-		// fmt.Println("degrees of freedom for chunk", chunks[0], degreesOfFreedom)
 		if degreesOfFreedom < 0 {
 			return 0
 		} else if degreesOfFreedom == 0 {
@@ -69,14 +66,12 @@ func possibleMatches(calls *int, chunks []string, counts []int) int {
 		}
 	}
 
-	results := prefixMatches(calls, 0, chunks[0], counts)
-	// fmt.Println(" prefixes", results)
+	results := prefixMatches(0, chunks[0], counts)
 
 	sum := 0
 	for _, res := range results {
-		sum += possibleMatches(calls, chunks[1:], counts[len(counts)-res.suffixLen:]) * res.matches
+		sum += possibleMatches(chunks[1:], counts[len(counts)-res.suffixLen:]) * res.matches
 	}
-	// fmt.Println("pm2 ret", sum)
 	return sum
 }
 
@@ -102,8 +97,26 @@ func merge(res0 []MatchResult, res1 []MatchResult, max int) []MatchResult {
 	return res
 }
 
-func prefixMatches(calls *int, hashRun int, str string, counts []int) []MatchResult {
-	*calls++
+var cache = map[string][]MatchResult{}
+
+func makeCacheKey(hashRun int, str string, counts []int) string {
+	return fmt.Sprintf("%v:%v:%v", hashRun, str, counts)
+}
+
+func prefixMatches(hashRun int, str string, counts []int) []MatchResult {
+	key := makeCacheKey(hashRun, str, counts)
+	res, found := cache[key]
+	if found {
+		return res
+	}
+
+	res = prefixMatchesInt(hashRun, str, counts)
+	cache[key] = res
+
+	return res
+}
+
+func prefixMatchesInt(hashRun int, str string, counts []int) []MatchResult {
 	if hashRun > 0 {
 		if len(counts) == 0 || hashRun > counts[0] {
 			return []MatchResult{}
@@ -121,14 +134,14 @@ func prefixMatches(calls *int, hashRun int, str string, counts []int) []MatchRes
 		if hashRun > 0 {
 			if hashRun < counts[0] {
 				// forced to continue the run using another # - no need to explore the dot
-				return prefixMatches(calls, hashRun+1, str[1:], counts)
+				return prefixMatches(hashRun+1, str[1:], counts)
 			} else {
 				// forced to terminate the run using dot, no need to explore another #
-				return prefixMatches(calls, 0, str[1:], counts[1:])
+				return prefixMatches(0, str[1:], counts[1:])
 			}
 		}
-		dotRes := prefixMatches(calls, hashRun, "."+str[1:], counts)
-		hashRes := prefixMatches(calls, hashRun+1, str[1:], counts)
+		dotRes := prefixMatches(hashRun, "."+str[1:], counts)
+		hashRes := prefixMatches(hashRun+1, str[1:], counts)
 
 		return merge(dotRes, hashRes, len(counts))
 	case '.':
@@ -136,11 +149,11 @@ func prefixMatches(calls *int, hashRun int, str string, counts []int) []MatchRes
 			if len(counts) == 0 || counts[0] != hashRun {
 				return []MatchResult{}
 			}
-			return prefixMatches(calls, 0, str[1:], counts[1:])
+			return prefixMatches(0, str[1:], counts[1:])
 		}
-		return prefixMatches(calls, 0, str[1:], counts)
+		return prefixMatches(0, str[1:], counts)
 	case '#':
-		return prefixMatches(calls, hashRun+1, str[1:], counts)
+		return prefixMatches(hashRun+1, str[1:], counts)
 	default:
 		panic("bad character " + str[0:0])
 	}
