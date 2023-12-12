@@ -1,6 +1,7 @@
 package aoc2023
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -10,86 +11,44 @@ type SpringRecord struct {
 	counts []int
 }
 
-var runRegexp = regexp.MustCompile("#+")
-
-func (r SpringRecord) Matches() bool {
-	runs := runRegexp.FindAllString(r.record, -1)
-	if len(runs) != len(r.counts) {
-		return false
-	}
-	for i, run := range runs {
-		if len(run) != r.counts[i] {
-			return false
-		}
-	}
-	return true
-}
+var runRegexp = regexp.MustCompile("[#\\?]+")
 
 func (r SpringRecord) PossibleMatches() int {
-	// fmt.Println("matching", r)
-	before, after, found := strings.Cut(r.record, "?")
-	if !found {
-		// fmt.Println("  !found", r.Matches())
-		if r.Matches() {
+	calls := 0
+	res := possibleMatches2(&calls, 0, r.record+".", r.counts)
+	fmt.Println(r, "calls", calls)
+	return res
+}
+
+func possibleMatches2(calls *int, hashRun int, str string, counts []int) int {
+	*calls++
+	if len(str) == 0 {
+		if len(counts) == 0 {
 			return 1
 		} else {
 			return 0
 		}
 	}
-	options := strings.Count(after, "?") + strings.Count(after, "#")
-	runs := runRegexp.FindAllString(before, -1)
-	// fmt.Println("  runs", runs)
-	if len(runs) == 0 {
-		return SpringRecord{after, r.counts}.PossibleMatches() + SpringRecord{"#" + after, r.counts}.PossibleMatches()
-	}
-	if len(runs) > len(r.counts) {
-		return 0
-	}
-	// very rough upper bound to avoid lots of recursion for long count lists
-	if len(r.counts)-len(runs)-1 > options {
-		// fmt.Println("shortcut", r, before, after, runs, options)
+	if len(counts) > (len(str)+1)/2 {
+		// no way we can still match
 		return 0
 	}
 
-	for i := 0; i < len(runs)-1; i++ {
-		if len(runs[i]) != r.counts[i] {
-			return 0
+	switch str[0] {
+	case '?':
+		return possibleMatches2(calls, hashRun, "."+str[1:], counts) + possibleMatches2(calls, hashRun+1, str[1:], counts)
+	case '.':
+		if hashRun > 0 {
+			if len(counts) == 0 || counts[0] != hashRun {
+				return 0
+			}
+			return possibleMatches2(calls, 0, str[1:], counts[1:])
 		}
-	}
-	lastIndex := len(runs) - 1
-	lastRun := runs[lastIndex]
-	// fmt.Println("  lI, lR", lastIndex, lastRun)
-	return r.possibleMatchesDot(lastIndex, lastRun, after) + r.possibleMatchesHash(before, lastIndex, lastRun, after)
-}
-
-func (r SpringRecord) possibleMatchesDot(lastIndex int, lastRun string, after string) int {
-	if len(lastRun) != r.counts[lastIndex] {
-		return 0
-	}
-
-	rec := SpringRecord{after, r.counts[lastIndex+1:]}
-	// fmt.Println("recurse .", rec)
-	return rec.PossibleMatches()
-}
-
-func (r SpringRecord) possibleMatchesHash(before string, lastIndex int, lastRun string, after string) int {
-	if before[len(before)-1] == '#' {
-		if len(lastRun) > r.counts[lastIndex] {
-			// a short run might still turn into a longer one, but a mismatched too-long run cannot be repaired
-			return 0
-		}
-
-		rec := SpringRecord{lastRun + "#" + after, r.counts[lastIndex:]}
-		// fmt.Println("recurse #1", rec)
-		return rec.PossibleMatches()
-	} else {
-		if len(lastRun) != r.counts[lastIndex] {
-			return 0
-		}
-
-		rec := SpringRecord{"#" + after, r.counts[lastIndex+1:]}
-		// fmt.Println("recurse #2", rec)
-		return rec.PossibleMatches()
+		return possibleMatches2(calls, 0, str[1:], counts)
+	case '#':
+		return possibleMatches2(calls, hashRun+1, str[1:], counts)
+	default:
+		panic("bad character " + str[0:0])
 	}
 }
 

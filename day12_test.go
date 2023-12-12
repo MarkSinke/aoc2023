@@ -7,27 +7,21 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDay12Matching(t *testing.T) {
-	records := ReadSpringRecords("day12input_example_no_unknowns.txt")
-
-	for _, record := range records {
-		assert.True(t, record.Matches(), "record %v is supposed to match", record)
-	}
-}
-
 func TestDay12InputExample(t *testing.T) {
 	records := ReadSpringRecords("day12input_example.txt")
 
 	sum := 0
 	for _, record := range records {
+		fmt.Print("matching", record)
 		matches := record.PossibleMatches()
+		fmt.Println(" ->", matches)
 		sum = sum + matches
 	}
 
 	assert.Equal(t, 21, sum)
 }
 
-func TestDay12Input(t *testing.T) {
+func XTestDay12Input(t *testing.T) {
 	records := ReadSpringRecords("day12input.txt")
 
 	sum := 0
@@ -60,7 +54,7 @@ func TestDay12Star2InputExample(t *testing.T) {
 	assert.Equal(t, 525152, sum)
 }
 
-func XTestDay12Star2Input(t *testing.T) {
+func TestDay12Star2Input(t *testing.T) {
 	records := ReadSpringRecords("day12input.txt")
 
 	sum := 0
@@ -77,5 +71,6 @@ func XTestDay12Star2Input(t *testing.T) {
 func TestDay12Star2HardRecord(t *testing.T) {
 	record := SpringRecord{"..?????.????", []int{1, 1, 1, 2}}
 
-	assert.Equal(t, 0, record.Unfold().PossibleMatches())
+	assert.Equal(t, 9, record.PossibleMatches())
+	assert.Equal(t, 7811529, record.Unfold().PossibleMatches())
 }
