@@ -1,7 +1,6 @@
 package aoc2023
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 )
@@ -22,12 +21,29 @@ func (r SpringRecord) PossibleMatches() int {
 
 	calls := 0
 	res := possibleMatches(&calls, chunksDot, r.counts)
-	fmt.Printf("(calls: %v)", calls)
+	//	fmt.Printf("(calls: %v)", calls)
 	return res
 }
 
 func minLengthForTail(counts []int) int {
 	return Sum(counts) + len(counts) // we have a dot afer each part plus the sentinel dot
+}
+
+func matchesMinPattern(str string, counts []int) bool {
+	i := 0
+	for _, count := range counts {
+		maxI := i + count
+		for ; i < maxI; i++ {
+			if str[i] == '.' {
+				return false
+			}
+		}
+		if str[i] == '#' {
+			return false
+		}
+		i++
+	}
+	return true
 }
 
 func possibleMatches(calls *int, chunks []string, counts []int) int {
@@ -40,8 +56,16 @@ func possibleMatches(calls *int, chunks []string, counts []int) int {
 		}
 	} else if len(chunks) == 1 {
 		// final chunk - we are looking to get rid of all the counts, if it doesn't fit, it's not a match
-		if len(chunks[0]) < minLengthForTail(counts) {
+		degreesOfFreedom := len(chunks[0]) - minLengthForTail(counts)
+		// fmt.Println("degrees of freedom for chunk", chunks[0], degreesOfFreedom)
+		if degreesOfFreedom < 0 {
 			return 0
+		} else if degreesOfFreedom == 0 {
+			if matchesMinPattern(chunks[0], counts) {
+				return 1
+			} else {
+				return 0
+			}
 		}
 	}
 

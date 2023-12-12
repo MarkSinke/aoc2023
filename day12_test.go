@@ -59,12 +59,10 @@ func TestDay12Star2Input(t *testing.T) {
 
 	sum := 0
 	for _, record := range records {
-		fmt.Print("matching", record)
-		fmt.Printf(" (min %v) ", len(record.record)-minLengthForTail(record.counts))
-		matches := 0
-		// matches := record.Unfold().PossibleMatches2()
+		fmt.Print("matching", record.Unfold())
+		matches := record.Unfold().PossibleMatches()
 		fmt.Println(" ->", matches)
-		// sum = sum + matches
+		sum = sum + matches
 	}
 
 	fmt.Println("Day 12 result (star 2):", sum)
@@ -88,5 +86,5 @@ func TestDay12Star2HardRecord3(t *testing.T) {
 	record := SpringRecord{"?????????????##", []int{3, 4, 3}}
 
 	assert.Equal(t, 10, record.PossibleMatches())
-	// assert.Equal(t, 1846252, record.Unfold().PossibleMatches2())
+	// assert.Equal(t, 1846252, record.Unfold().PossibleMatches())
 }
