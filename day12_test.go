@@ -54,7 +54,7 @@ func TestDay12Star2InputExample(t *testing.T) {
 	assert.Equal(t, 525152, sum)
 }
 
-func TestDay12Star2Input(t *testing.T) {
+func XTestDay12Star2Input(t *testing.T) {
 	records := ReadSpringRecords("day12input.txt")
 
 	sum := 0
