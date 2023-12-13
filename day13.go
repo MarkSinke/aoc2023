@@ -1,6 +1,9 @@
 package aoc2023
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type Note []string
 
@@ -65,7 +68,11 @@ func (n Note) GetMirrorLine() int {
 		return 100 * (mirror + 1)
 	}
 
-	return findHorizontalMirror(transpose(n)) + 1
+	mirror = findHorizontalMirror(transpose(n))
+	if mirror == -1 {
+		return -1
+	}
+	return mirror + 1
 }
 
 func (n Note) Print() {
@@ -74,10 +81,98 @@ func (n Note) Print() {
 	}
 }
 
+func (n Note) PrintMirror(mirror int) {
+	if mirror >= 100 {
+		yM := (mirror - 1) / 100
+		for y, line := range n {
+			fmt.Println(line)
+			if y == yM {
+				fmt.Println(strings.Repeat("-", len(line)))
+			}
+		}
+	} else {
+		for _, line := range n {
+			fmt.Print(line[:mirror])
+			fmt.Print("|")
+			fmt.Println(line[mirror:])
+		}
+	}
+}
+
 func SumMirrors(notes []Note) int {
 	sum := 0
 	for _, n := range notes {
-		sum += n.GetMirrorLine()
+		mirror := n.GetMirrorLine()
+		sum += mirror
 	}
 	return sum
+}
+
+func SumSmudgeMirrors(notes []Note) int {
+	sum := 0
+	for _, n := range notes {
+		mirror := n.GetSmudgeMirrorLine()
+		sum += mirror
+	}
+	return sum
+}
+
+func flip(r byte) byte {
+	if r == '#' {
+		return '.'
+	}
+	return '#'
+}
+
+func (n Note) Unsmudge(y int, x int) Note {
+	var res []string
+	for yRes, line := range n {
+		if yRes == y {
+			line = line[:x] + string(flip(line[x])) + line[x+1:]
+		}
+		res = append(res, line)
+	}
+	return res
+}
+
+func findDiffIndex(str0 string, str1 string) int {
+	index := -1
+	for i := range str0 {
+		if str0[i] != str1[i] {
+			if index == -1 {
+				index = i
+			} else {
+				return -1
+			}
+		}
+	}
+	return index
+}
+
+func findHorizontalMirrorSmudge(n Note) int {
+	for y := range n {
+		for y2 := y + 1; y2 < len(n); y2 += 2 {
+			x := findDiffIndex(n[y], n[y2])
+			mirrorLine := (y + y2) / 2
+			if x != -1 && hasMirror(n.Unsmudge(y, x), mirrorLine) {
+				return mirrorLine
+			}
+		}
+	}
+	return -1
+}
+
+func (n Note) GetSmudgeMirrorLine() int {
+	mirror := findHorizontalMirrorSmudge(n)
+
+	if mirror != -1 {
+		return 100 * (mirror + 1)
+	}
+
+	mirror = findHorizontalMirrorSmudge(transpose(n))
+	if mirror == -1 {
+		// panic("0")
+		return -1
+	}
+	return mirror + 1
 }

@@ -22,3 +22,19 @@ func TestDay13Input(t *testing.T) {
 
 	fmt.Println("Day 13 result (star 1):", sum)
 }
+
+func TestDay13Star2InputExample(t *testing.T) {
+	notes := ReadMirrorNotes("day13input_example.txt")
+
+	sum := SumSmudgeMirrors(notes)
+
+	assert.Equal(t, 400, sum)
+}
+
+func TestDay13Star2Input(t *testing.T) {
+	notes := ReadMirrorNotes("day13input.txt")
+
+	sum := SumSmudgeMirrors(notes)
+
+	fmt.Println("Day 13 result (star 2):", sum)
+}
