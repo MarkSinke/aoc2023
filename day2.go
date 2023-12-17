@@ -17,7 +17,7 @@ type GameResult struct {
 	results []DiceResult
 }
 
-var gameResultRegex = regexp.MustCompile("Game (\\d+): (.*)")
+var gameResultRegex = regexp.MustCompile(`Game (\d+): (.*)`)
 
 func ReadGameResults(path string) []GameResult {
 	lines := ReadFile(path)
@@ -44,7 +44,7 @@ func ParseDiceResults(content string) []DiceResult {
 	return diceResults
 }
 
-var colorRegex = regexp.MustCompile("(\\d+) (red|green|blue)")
+var colorRegex = regexp.MustCompile(`(\d+) (red|green|blue)`)
 
 func ParseDiceResult(str string) DiceResult {
 	resultStrs := strings.Split(str, ",")

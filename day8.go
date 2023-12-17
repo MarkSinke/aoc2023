@@ -12,7 +12,7 @@ type Node struct {
 	right string
 }
 
-var nodeRegexp = regexp.MustCompile("([0-9A-Z]+) = \\(([0-9A-Z]+), ([0-9A-Z]+)\\)")
+var nodeRegexp = regexp.MustCompile(`([0-9A-Z]+) = \(([0-9A-Z]+), ([0-9A-Z]+)\)`)
 
 func ReadLRMap(path string) (string, map[string]Node) {
 	lines := ReadFile(path)
@@ -81,15 +81,6 @@ func filterAllEndingInA(locations []string) []string {
 		}
 	}
 	return result
-}
-
-func allLocationsEndInZ(locations []string) bool {
-	for _, loc := range locations {
-		if !strings.HasSuffix(loc, "Z") {
-			return false
-		}
-	}
-	return true
 }
 
 // greatest common divisor

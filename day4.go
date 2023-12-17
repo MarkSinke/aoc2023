@@ -35,7 +35,7 @@ func (g GameCard) Matches() int {
 	return res
 }
 
-var gameCardRegex = regexp.MustCompile("Card +(\\d+): ([\\d ]+) \\| ([\\d ]+)")
+var gameCardRegex = regexp.MustCompile(`Card +(\d+): ([\d ]+) \| ([\d ]+)`)
 
 func ReadGameCards(path string) []GameCard {
 	lines := ReadFile(path)

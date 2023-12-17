@@ -41,10 +41,6 @@ func (s CoordSet) add(xy Coord, r rune) {
 	s[xy] = r
 }
 
-func (s CoordSet) remove(xy Coord) {
-	delete(s, xy)
-}
-
 func (s CoordSet) has(xy Coord) bool {
 	_, ok := s[xy]
 	return ok
@@ -72,7 +68,7 @@ func GetSymbolCoordSet(engine []string) CoordSet {
 	return coords
 }
 
-var numRegexp = regexp.MustCompile("-?\\d+")
+var numRegexp = regexp.MustCompile(`-?\d+`)
 
 func GetNumbers(engine []string) []NumberCoord {
 	var coords []NumberCoord

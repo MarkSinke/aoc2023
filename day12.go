@@ -10,7 +10,7 @@ type SpringRecord struct {
 	counts []int
 }
 
-var chunkRegexp = regexp.MustCompile("[#\\?]+")
+var chunkRegexp = regexp.MustCompile(`[#\?]+`)
 
 func (r SpringRecord) PossibleMatches() int {
 	chunks := chunkRegexp.FindAllString(r.record, -1)

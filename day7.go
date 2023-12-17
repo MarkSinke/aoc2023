@@ -43,13 +43,6 @@ type Hand struct {
 	bet   int
 }
 
-func getItem(m map[Card]int) (Card, int) {
-	for c, i := range m {
-		return c, i
-	}
-	return 0, 0
-}
-
 func makeRank(cards []Card) int {
 	m := cardsToCardCounts(cards)
 
