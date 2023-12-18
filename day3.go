@@ -11,6 +11,18 @@ type Coord struct {
 	y int
 }
 
+func absDiff(x int, y int) int {
+	if x < y {
+		return y - x
+	} else {
+		return x - y
+	}
+}
+
+func Dist(coord0 Coord, coord1 Coord) int {
+	return absDiff(coord0.x, coord1.x) + absDiff(coord0.y, coord1.y)
+}
+
 type NumberCoord struct {
 	number int
 	xMin   int

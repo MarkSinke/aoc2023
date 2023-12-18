@@ -52,23 +52,11 @@ func ExpandGalaxy(coords []Coord, d int) []Coord {
 	return res
 }
 
-func absDiff(x int, y int) int {
-	if x < y {
-		return y - x
-	} else {
-		return x - y
-	}
-}
-
-func dist(coord0 Coord, coord1 Coord) int {
-	return absDiff(coord0.x, coord1.x) + absDiff(coord0.y, coord1.y)
-}
-
 func ComputeDistances(coords []Coord) []int {
 	res := []int{}
 	for i, coord0 := range coords {
 		for _, coord1 := range coords[0:i] {
-			res = append(res, dist(coord0, coord1))
+			res = append(res, Dist(coord0, coord1))
 		}
 	}
 	return res

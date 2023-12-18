@@ -23,7 +23,8 @@ const (
 	pipe
 )
 
-var north, east, south, west = Direction{0, -1}, Direction{1, 0}, Direction{0, 1}, Direction{-1, 0}
+var North, East, South, West = Direction{0, -1}, Direction{1, 0}, Direction{0, 1}, Direction{-1, 0}
+var AllDirections = []Direction{North, East, South, West}
 
 func (t Tile) isStart() bool {
 	return t.n && t.e && t.s && t.w
@@ -45,38 +46,38 @@ func (t *Tile) setDirs(one Direction, two Direction) {
 
 func (t *Tile) setDir(d Direction) {
 	switch d {
-	case north:
+	case North:
 		t.n = true
-	case east:
+	case East:
 		t.e = true
-	case south:
+	case South:
 		t.s = true
-	case west:
+	case West:
 		t.w = true
 	}
 }
 
 func (t Tile) findDir(canN bool, canE bool, canS bool, canW bool) Direction {
 	if t.n && canN {
-		return north
+		return North
 	} else if t.e && canE {
-		return east
+		return East
 	} else if t.s && canS {
-		return south
+		return South
 	} else if t.w && canW {
-		return west
+		return West
 	}
 	return Direction{0, 0}
 }
 
 func (t Tile) follow(d Direction) Direction {
-	if d == north {
+	if d == North {
 		return t.findDir(true, true, false, true)
-	} else if d == east {
+	} else if d == East {
 		return t.findDir(true, true, true, false)
-	} else if d == south {
+	} else if d == South {
 		return t.findDir(false, true, true, true)
-	} else if d == west {
+	} else if d == West {
 		return t.findDir(true, false, true, true)
 	} else {
 		return Direction{0, 0}
@@ -194,13 +195,13 @@ func FindLoopLen(tiles [][]Tile) int {
 
 func findDirFromStart(tiles [][]Tile, x int, y int) Direction {
 	if y > 0 && tiles[y-1][x].s {
-		return north
+		return North
 	} else if y < len(tiles)-1 && tiles[y+1][x].n {
-		return south
+		return South
 	} else if x > 0 && tiles[y][x-1].e {
-		return west
+		return West
 	} else if x < len(tiles[y])-1 && tiles[y][x+1].w {
-		return east
+		return East
 	}
 	return Direction{0, 0}
 }
