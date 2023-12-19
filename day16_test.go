@@ -10,7 +10,7 @@ import (
 func TestDay16InputExample(t *testing.T) {
 	cells := ReadContraption("day16input_example.txt")
 
-	FollowBeam(cells, Beam{Coord{0, 0}, Dir{1, 0}})
+	FollowBeam(cells, Beam{Coord{0, 0}, East})
 
 	sum := CountEnergized(cells)
 
@@ -20,7 +20,7 @@ func TestDay16InputExample(t *testing.T) {
 func TestDay16Input(t *testing.T) {
 	cells := ReadContraption("day16input.txt")
 
-	FollowBeam(cells, Beam{Coord{0, 0}, Dir{1, 0}})
+	FollowBeam(cells, Beam{Coord{0, 0}, East})
 
 	sum := CountEnergized(cells)
 
@@ -30,7 +30,7 @@ func TestDay16Input(t *testing.T) {
 func TestDay16Star2InputExample(t *testing.T) {
 	cells := ReadContraption("day16input_example.txt")
 
-	FollowBeam(cells, Beam{Coord{3, 0}, Dir{0, 1}})
+	FollowBeam(cells, Beam{Coord{3, 0}, South})
 	sum := CountEnergized(cells)
 
 	assert.Equal(t, 51, sum)

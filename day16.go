@@ -17,7 +17,7 @@ const (
 
 type Cell struct {
 	cellType CellType
-	hitFrom  []Dir
+	hitFrom  []Direction
 }
 
 func toCellType(r rune) CellType {
@@ -66,55 +66,50 @@ func CountEnergized(cells [][]Cell) int {
 func ResetEnergized(cells [][]Cell) {
 	for y, cellLine := range cells {
 		for x := range cellLine {
-			cells[y][x].hitFrom = []Dir{}
+			cells[y][x].hitFrom = []Direction{}
 		}
 	}
 }
 
-type Dir struct {
-	dx int
-	dy int
-}
-
-func (c *Cell) HitFrom(d Dir) []Dir {
+func (c *Cell) HitFrom(d Direction) []Direction {
 	if slices.Contains(c.hitFrom, d) {
-		return []Dir{}
+		return []Direction{}
 	}
 	c.hitFrom = append(c.hitFrom, d)
 
 	switch c.cellType {
 	default:
-		return []Dir{d}
+		return []Direction{d}
 	case lr:
 		if d.dx != 0 {
-			return []Dir{d}
+			return []Direction{d}
 		} else {
-			return []Dir{{-1, 0}, {1, 0}}
+			return []Direction{{-1, 0}, {1, 0}}
 		}
 	case tb:
 		if d.dx != 0 {
-			return []Dir{{0, -1}, {0, 1}}
+			return []Direction{{0, -1}, {0, 1}}
 		} else {
-			return []Dir{d}
+			return []Direction{d}
 		}
 	case bltr:
 		if d.dx != 0 {
-			return []Dir{{0, -d.dx}}
+			return []Direction{{0, -d.dx}}
 		} else {
-			return []Dir{{-d.dy, 0}}
+			return []Direction{{-d.dy, 0}}
 		}
 	case tlbr:
 		if d.dx != 0 {
-			return []Dir{{0, d.dx}}
+			return []Direction{{0, d.dx}}
 		} else {
-			return []Dir{{d.dy, 0}}
+			return []Direction{{d.dy, 0}}
 		}
 	}
 }
 
 type Beam struct {
-	coord Coord
-	dir   Dir
+	coord     Coord
+	Direction Direction
 }
 
 func FollowBeam(cells [][]Cell, initial Beam) {
@@ -133,11 +128,11 @@ func FollowBeamStep(cells [][]Cell, beam Beam) []Beam {
 		return []Beam{}
 	}
 
-	newDirs := cells[coord.y][coord.x].HitFrom(beam.dir)
+	newDirs := cells[coord.y][coord.x].HitFrom(beam.Direction)
 
 	var newBeams []Beam
-	for _, dir := range newDirs {
-		newBeams = append(newBeams, Beam{Coord{coord.x + dir.dx, coord.y + dir.dy}, dir})
+	for _, Direction := range newDirs {
+		newBeams = append(newBeams, Beam{Coord{coord.x + Direction.dx, coord.y + Direction.dy}, Direction})
 	}
 
 	return newBeams
@@ -153,7 +148,7 @@ func ReadContraption(path string) [][]Cell {
 		}
 		var resLine []Cell
 		for _, r := range line {
-			resLine = append(resLine, Cell{toCellType(r), []Dir{}})
+			resLine = append(resLine, Cell{toCellType(r), []Direction{}})
 		}
 		res = append(res, resLine)
 	}
@@ -163,10 +158,10 @@ func ReadContraption(path string) [][]Cell {
 func FindMaxBeam(cells [][]Cell) int {
 	var beams []Beam
 	for y := range cells {
-		beams = append(beams, Beam{Coord{0, y}, Dir{1, 0}}, Beam{Coord{len(cells[0]) - 1, y}, Dir{-1, 0}})
+		beams = append(beams, Beam{Coord{0, y}, Direction{1, 0}}, Beam{Coord{len(cells[0]) - 1, y}, Direction{-1, 0}})
 	}
 	for x := range cells[0] {
-		beams = append(beams, Beam{Coord{x, 0}, Dir{0, 1}}, Beam{Coord{x, len(cells) - 1}, Dir{0, -1}})
+		beams = append(beams, Beam{Coord{x, 0}, Direction{0, 1}}, Beam{Coord{x, len(cells) - 1}, Direction{0, -1}})
 	}
 
 	maxEnergized := 0
