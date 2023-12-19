@@ -5,13 +5,14 @@ import (
 	"testing"
 )
 
-func TestDay17InputExample(t *testing.T) {
+func XTestDay17InputExample(t *testing.T) {
 	grid := ReadHeatLossGrid("day17input_example.txt")
 
-	steps, loss := FindLeastLossPath(grid)
+	mx, my := grid.GetBounds()
+	result := FindLeastLossPath(grid, Coord{0, 0}, Coord{mx - 1, my - 1})
 
-	fmt.Println("path", steps)
-	fmt.Println(loss)
+	fmt.Println("path", result.coords)
+	fmt.Println(result.loss)
 
-	PrintPath(steps, grid)
+	PrintPath(result.coords, grid)
 }

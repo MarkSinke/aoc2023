@@ -1,171 +1,218 @@
 package aoc2023
 
 import (
-	"container/heap"
 	"fmt"
-	"math"
+	"slices"
 )
 
-type Heat struct {
-	loss         int
-	minTotalLoss int
+type Grid interface {
+	GetLoss(c Coord) int
+	IsValidStep(from Coord, to Coord) bool
 }
 
-func ReadHeatLossGrid(path string) [][]Heat {
+type HeatGrid [][]int
+
+func (g HeatGrid) GetBounds() (int, int) {
+	return len(g[0]), len(g)
+}
+
+func (g HeatGrid) GetLoss(c Coord) int {
+	return g[c.y][c.x]
+}
+
+func (g HeatGrid) IsValidStep(from Coord, to Coord) bool {
+	mx, my := g.GetBounds()
+	return to.x >= 0 && to.x < mx && to.y >= 0 && to.y < my
+}
+
+type PartialGrid struct {
+	g              Grid
+	forbiddenNodes []Coord
+	spurNode       Coord
+	forbiddenDirs  []Direction
+}
+
+func (g PartialGrid) GetLoss(c Coord) int {
+	return g.g.GetLoss(c)
+}
+
+func (g PartialGrid) IsValidStep(from Coord, to Coord) bool {
+	if !g.g.IsValidStep(from, to) {
+		return false
+	}
+	if slices.Contains(g.forbiddenNodes, to) {
+		return false
+	}
+	if from == g.spurNode {
+		dir := ToDir(from, to)
+		if slices.Contains(g.forbiddenDirs, dir) {
+			return false
+		}
+	}
+	return true
+}
+
+func ReadHeatLossGrid(path string) HeatGrid {
 	lines := ReadFile(path)
 
-	var grid [][]Heat
+	var grid [][]int
 	for _, line := range lines {
 		if line == "" {
 			continue
 		}
-		var gridLine []Heat
+		var gridLine []int
 		for _, r := range line {
-			gridLine = append(gridLine, Heat{int(r - '0'), math.MaxInt})
+			gridLine = append(gridLine, int(r-'0'))
 		}
 		grid = append(grid, gridLine)
 	}
 	return grid
 }
 
-func isUTurn(prev []Direction, dir Direction) bool {
-	if len(prev) == 0 {
-		return false
-	}
-	prevDir := prev[len(prev)-1]
-	return dir.dx+prevDir.dx == 0 && dir.dy+prevDir.dy == 0
+// HeatTile is a struct which implements Pather
+type HeatTile struct {
+	c    Coord
+	grid Grid
 }
 
-func isCycle(prevs []Direction, dir Direction) bool {
-	dx := dir.dx
-	dy := dir.dy
+func (t HeatTile) PathEstimatedCost(to Pather) int {
+	return Dist(t.c, to.(HeatTile).c)
+}
 
-	for _, prev := range prevs {
-		dx += prev.dx
-		dy += prev.dy
+func (t HeatTile) PathNeighborCost(p Pather) int {
+	to := p.(HeatTile)
+	return to.grid.GetLoss(to.c)
+}
 
-		if dx == 0 && dy == 0 {
-			return true
+func (t HeatTile) Coord() Coord {
+	return t.c
+}
+
+func (t HeatTile) PathNeighbors() []Pather {
+	neighbors := []Pather{}
+	for _, dir := range AllDirections {
+		newCoord := Coord{t.c.x + dir.dx, t.c.y + dir.dy}
+		if t.grid.IsValidStep(t.c, newCoord) {
+			neighbors = append(neighbors, HeatTile{newCoord, t.grid})
 		}
 	}
-	return false
+	return neighbors
 }
 
-func isOutOfBounds(c Coord, grid [][]Heat) bool {
-	return c.x < 0 || c.x >= len(grid[0]) || c.y < 0 || c.y >= len(grid)
+type HeatPath struct {
+	coords []Coord
+	loss   int
 }
 
-func isFourthInOneDirection(prev []Direction, dir Direction) bool {
-	count := len(prev)
-	return count >= 3 && prev[count-3] == dir && prev[count-2] == dir && prev[count-1] == dir
-}
-
-// func isAnotherPathAtLeastAsEfficient(loss int, grid [][]Heat, c Coord) bool {
-// 	return grid[c.y][c.x].minTotalLoss < loss-1
-// }
-
-type HeatPathState struct {
-	steps []Direction
-	cur   Coord
-	loss  int
-}
-
-type HeatQueue []HeatPathState
-
-func (hq HeatQueue) Len() int {
-	return len(hq)
-}
-
-func (hq HeatQueue) Less(i, j int) bool {
-	return hq[i].loss < hq[j].loss
-}
-
-func (hq HeatQueue) Swap(i, j int) {
-	hq[i], hq[j] = hq[j], hq[i]
-}
-
-func (hq *HeatQueue) Push(x any) {
-	item := x.(HeatPathState)
-	*hq = append(*hq, item)
-}
-
-func (hq *HeatQueue) Pop() any {
-	old := *hq
-	n := len(old)
-	item := old[n-1]
-	*hq = old[0 : n-1]
-	return item
-}
-
-func copyAndAppend(prev []Direction, dir Direction) []Direction {
-	steps := make([]Direction, len(prev)+1)
-	copy(steps, prev)
-	steps[len(steps)-1] = dir
-	return steps
-}
-
-func heatLossPathStep(prevSteps []Direction, c Coord, loss int, dir Direction, grid [][]Heat) *HeatPathState {
-	// fmt.Print("step", dir, "-> ")
-	// if isUTurn(prevSteps, dir) {
-	// 	// fmt.Println("u-turn")
-	// 	return nil
-	// }
-	if isCycle(prevSteps, dir) {
-		return nil
-	}
-
-	if isFourthInOneDirection(prevSteps, dir) {
-		// fmt.Println("4th move")
-		return nil
-	}
-
-	newCoord := Coord{c.x + dir.dx, c.y + dir.dy}
-
-	if isOutOfBounds(newCoord, grid) {
-		// fmt.Println("oob", newCoord)
-		return nil
-	}
-
-	loss += grid[newCoord.y][newCoord.x].loss
-
-	// if isAnotherPathAtLeastAsEfficient(loss, grid, newCoord) {
-	// 	fmt.Println("less efficient")
-	// 	return nil
-	// }
-	// grid[newCoord.y][newCoord.x].minTotalLoss = loss
-
-	return &HeatPathState{copyAndAppend(prevSteps, dir), newCoord, loss}
-}
-
-func FindLeastLossPath(grid [][]Heat) ([]Direction, int) {
-	states := &HeatQueue{{[]Direction{}, Coord{0, 0}, 0}}
-	heap.Init(states)
-
-	for len(*states) > 0 {
-		state := heap.Pop(states).(HeatPathState)
-		fmt.Println("popped", state.loss, "steps", len(state.steps), "from", len(*states))
-		if state.cur.x == len(grid[0])-1 && state.cur.y == len(grid)-1 {
-			return state.steps, state.loss
+func isAllowedPath(path HeatPath) bool {
+	coords := path.coords
+	for i := 4; i < len(coords); i++ {
+		c := coords[i]
+		d := ToDir(coords[i-1], c)
+		if ToDir(coords[i-4], coords[i-3]) == d && ToDir(coords[i-3], coords[i-2]) == d && ToDir(coords[i-2], coords[i-1]) == d {
+			return false
 		}
+	}
+	return true
+}
 
-		for _, dir := range AllDirections {
-			newState := heatLossPathStep(state.steps, state.cur, state.loss, dir, grid)
-			if newState != nil {
-				heap.Push(states, *newState)
-				// fmt.Println("pushed", *newState)
+func hasSameRoot(path HeatPath, coords []Coord) bool {
+	for i := 0; i < len(coords); i++ {
+		if path.coords[i] != coords[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func ComputeTotalLoss(coords []Coord, g Grid) int {
+	loss := 0
+	for _, c := range coords[1:] {
+		loss += g.GetLoss(c)
+	}
+	return loss
+}
+
+func comparePaths(left HeatPath, right HeatPath) int {
+	diff := right.loss - left.loss
+	if diff != 0 {
+		return diff
+	}
+
+	i := 0
+	for ; i < len(left.coords) && i < len(right.coords); i++ {
+		diff = right.coords[i].y - left.coords[i].y
+		if diff != 0 {
+			return diff
+		}
+		diff = right.coords[i].x - left.coords[i].x
+		if diff != 0 {
+			return diff
+		}
+	}
+	diff = len(right.coords) - len(left.coords)
+	return diff
+}
+
+func FindLeastLossPath(grid Grid, from Coord, to Coord) HeatPath {
+	path, distance, _ := Path(HeatTile{from, grid}, HeatTile{to, grid})
+	heatPath := HeatPath{path, distance}
+
+	if isAllowedPath(heatPath) {
+		return heatPath
+	}
+
+	shortestPaths := []HeatPath{heatPath}
+	var candidatePaths []HeatPath
+
+	// use Yen's algorithm to find the k shortest paths (in this case, next shortest) - from Wikipedia
+	for k := 1; ; k++ {
+		fmt.Println("k=", k)
+		for i := 0; i < len(shortestPaths[k-1].coords)-2; i++ {
+			rootPath := shortestPaths[k-1].coords[0 : i+1] // includes spurNode
+			spurNode := shortestPaths[k-1].coords[i]
+
+			// all directions from the spur nodes that have already been tried in previous shortest paths
+			forbiddenNodes := shortestPaths[k-1].coords[0:i]
+			forbiddenDirs := []Direction{}
+			for _, path := range shortestPaths {
+				if hasSameRoot(path, rootPath) {
+					forbiddenDirs = append(forbiddenDirs, ToDir(path.coords[i], path.coords[i+1]))
+				}
+			}
+
+			pg := PartialGrid{grid, forbiddenNodes, spurNode, forbiddenDirs}
+
+			spurPath, _, found := Path(HeatTile{spurNode, pg}, HeatTile{to, pg})
+			if found {
+				totalPath := append([]Coord{}, forbiddenNodes...)
+				totalPath = append(totalPath, spurPath...)
+				totalLoss := ComputeTotalLoss(totalPath, grid)
+				newPath := HeatPath{totalPath, totalLoss}
+				// fmt.Println("new path", newPath)
+				index, found := slices.BinarySearchFunc(candidatePaths, newPath, comparePaths)
+				if !found {
+					candidatePaths = slices.Insert(candidatePaths, index, newPath)
+				}
 			}
 		}
+
+		newShortest := candidatePaths[0]
+		fmt.Println("new shortest", newShortest.loss, newShortest)
+		if isAllowedPath(newShortest) {
+			return newShortest
+		}
+
+		shortestPaths = append(shortestPaths, newShortest)
+		candidatePaths = candidatePaths[1:]
 	}
-	panic("min loss in the grid should correspond with one of the paths")
 }
 
-func PrintPath(steps []Direction, grid [][]Heat) {
-	cur := Coord{0, 0}
+func PrintPath(steps []Coord, grid Grid) {
 	loss := 0
 	for _, step := range steps {
-		fmt.Print(cur, "+", step)
-		cur = Coord{cur.x + step.dx, cur.y + step.dy}
-		loss += grid[cur.y][cur.x].loss
-		fmt.Println(" ->", cur, "loss=", loss)
+		fmt.Print(step)
+		loss += grid.GetLoss(step)
+		fmt.Println(" -> loss=", loss)
 	}
 }

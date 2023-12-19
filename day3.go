@@ -23,6 +23,10 @@ func Dist(coord0 Coord, coord1 Coord) int {
 	return absDiff(coord0.x, coord1.x) + absDiff(coord0.y, coord1.y)
 }
 
+func ToDir(from Coord, to Coord) Direction {
+	return Direction{to.x - from.x, to.y - from.y}
+}
+
 type NumberCoord struct {
 	number int
 	xMin   int
