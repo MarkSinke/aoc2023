@@ -8,7 +8,6 @@ import (
 type DigStep struct {
 	dir   Direction
 	count int
-	// color RGBA
 }
 
 var digSpec = regexp.MustCompile(`([URDL]) ([0-9]+) \(#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})\)`)
@@ -89,48 +88,37 @@ func ReadDigPlan2(path string) []DigStep {
 	return steps
 }
 
-func getExtent(steps []DigStep) (Coord, Coord) {
+func ComputeCoords(steps []DigStep) []Coord {
 	c := Coord{0, 0}
-	minX := 0
-	minY := 0
-	maxX := 0
-	maxY := 0
+
+	coords := []Coord{}
 	for _, step := range steps {
+		coords = append(coords, c)
 		c.x += step.dir.dx * step.count
 		c.y += step.dir.dy * step.count
-
-		maxX = max(maxX, c.x)
-		maxY = max(maxY, c.y)
-
-		minX = min(minX, c.x)
-		minY = min(minY, c.y)
 	}
-
-	return Coord{minX, minY}, Coord{maxX + 1, maxY + 1}
+	return coords
 }
 
-func createSurface(extent Coord) [][]Tile {
-	tiles := make([][]Tile, extent.y)
-
-	for y := range tiles {
-		tiles[y] = make([]Tile, extent.x)
-	}
-
-	return tiles
+func inProduct(c0 Coord, c1 Coord) int {
+	return c0.x*c1.y - c1.x*c0.y
 }
 
-func ExecuteDigPlan(steps []DigStep) [][]Tile {
-	minCoord, maxCoord := getExtent(steps)
-	tiles := createSurface(Coord{maxCoord.x - minCoord.x, maxCoord.y - minCoord.y})
+// compute polygon coords using Green's theorem
+func ComputePolygonArea(coords []Coord) int {
+	area := 0      // Green: area = 1/2 * SUM inProducts
+	perimeter := 0 // SUM of lengths of step vectors
 
-	c := Coord{0, 0}
+	for i := range coords {
+		c0 := coords[i]
+		c1 := coords[(i+1)%len(coords)]
 
-	for _, step := range steps {
-		for i := 0; i < step.count; i++ {
-			tiles[c.y-minCoord.y][c.x-minCoord.x].status = pipe
-			c.x += step.dir.dx
-			c.y += step.dir.dy
-		}
+		area += inProduct(c0, c1)
+		perimeter += Dist(c0, c1)
 	}
-	return tiles
+
+	// now we have 2x the area, using the midpoints of the coords
+	// we need to add the "outer" half pixel to the area
+	// i.e., we need to add the perimeter / 2 + 1  and area / 2
+	return (area+perimeter)/2 + 1
 }
