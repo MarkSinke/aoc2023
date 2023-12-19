@@ -3,11 +3,12 @@ package aoc2023
 import (
 	"fmt"
 	"slices"
+
+	"github.com/fzipp/astar"
 )
 
 type Grid interface {
 	GetLoss(c Coord) int
-	IsValidStep(from Coord, to Coord) bool
 }
 
 type HeatGrid [][]int
@@ -20,13 +21,24 @@ func (g HeatGrid) GetLoss(c Coord) int {
 	return g[c.y][c.x]
 }
 
-func (g HeatGrid) IsValidStep(from Coord, to Coord) bool {
+func (g HeatGrid) isValidCoord(to Coord) bool {
 	mx, my := g.GetBounds()
 	return to.x >= 0 && to.x < mx && to.y >= 0 && to.y < my
 }
 
+func (g HeatGrid) Neighbours(c Coord) []Coord {
+	coords := []Coord{}
+	for _, dir := range AllDirections {
+		newCoord := Coord{c.x + dir.dx, c.y + dir.dy}
+		if g.isValidCoord(newCoord) {
+			coords = append(coords, newCoord)
+		}
+	}
+	return coords
+}
+
 type PartialGrid struct {
-	g              Grid
+	g              HeatGrid
 	forbiddenNodes []Coord
 	spurNode       Coord
 	forbiddenDirs  []Direction
@@ -36,20 +48,30 @@ func (g PartialGrid) GetLoss(c Coord) int {
 	return g.g.GetLoss(c)
 }
 
-func (g PartialGrid) IsValidStep(from Coord, to Coord) bool {
-	if !g.g.IsValidStep(from, to) {
-		return false
-	}
+func (g PartialGrid) isHiddenEdge(from Coord, to Coord) bool {
 	if slices.Contains(g.forbiddenNodes, to) {
-		return false
+		return true
 	}
 	if from == g.spurNode {
 		dir := ToDir(from, to)
 		if slices.Contains(g.forbiddenDirs, dir) {
-			return false
+			return true
 		}
 	}
-	return true
+	return false
+}
+
+func (g PartialGrid) Neighbours(c Coord) []Coord {
+	coords := g.g.Neighbours(c)
+
+	filtered := []Coord{}
+
+	for _, coord := range coords {
+		if !g.isHiddenEdge(c, coord) {
+			filtered = append(filtered, coord)
+		}
+	}
+	return filtered
 }
 
 func ReadHeatLossGrid(path string) HeatGrid {
@@ -67,36 +89,6 @@ func ReadHeatLossGrid(path string) HeatGrid {
 		grid = append(grid, gridLine)
 	}
 	return grid
-}
-
-// HeatTile is a struct which implements Pather
-type HeatTile struct {
-	c    Coord
-	grid Grid
-}
-
-func (t HeatTile) PathEstimatedCost(to Pather) int {
-	return Dist(t.c, to.(HeatTile).c)
-}
-
-func (t HeatTile) PathNeighborCost(p Pather) int {
-	to := p.(HeatTile)
-	return to.grid.GetLoss(to.c)
-}
-
-func (t HeatTile) Coord() Coord {
-	return t.c
-}
-
-func (t HeatTile) PathNeighbors() []Pather {
-	neighbors := []Pather{}
-	for _, dir := range AllDirections {
-		newCoord := Coord{t.c.x + dir.dx, t.c.y + dir.dy}
-		if t.grid.IsValidStep(t.c, newCoord) {
-			neighbors = append(neighbors, HeatTile{newCoord, t.grid})
-		}
-	}
-	return neighbors
 }
 
 type HeatPath struct {
@@ -133,34 +125,44 @@ func ComputeTotalLoss(coords []Coord, g Grid) int {
 	return loss
 }
 
-func comparePaths(left HeatPath, right HeatPath) int {
-	diff := right.loss - left.loss
+func comparePaths(e HeatPath, target HeatPath) int {
+	diff := e.loss - target.loss
 	if diff != 0 {
 		return diff
 	}
 
 	i := 0
-	for ; i < len(left.coords) && i < len(right.coords); i++ {
-		diff = right.coords[i].y - left.coords[i].y
+	for ; i < len(e.coords) && i < len(target.coords); i++ {
+		diff = e.coords[i].y - target.coords[i].y
 		if diff != 0 {
 			return diff
 		}
-		diff = right.coords[i].x - left.coords[i].x
+		diff = e.coords[i].x - target.coords[i].x
 		if diff != 0 {
 			return diff
 		}
 	}
-	diff = len(right.coords) - len(left.coords)
+	diff = len(e.coords) - len(target.coords)
 	return diff
 }
 
-func FindLeastLossPath(grid Grid, from Coord, to Coord) HeatPath {
-	path, distance, _ := Path(HeatTile{from, grid}, HeatTile{to, grid})
-	heatPath := HeatPath{path, distance}
+func estimatedCost(c0, c1 Coord) float64 {
+	return float64(Dist(c0, c1))
+}
+
+func (g HeatGrid) cost(c0, c1 Coord) float64 {
+	return float64(g.GetLoss(c1))
+}
+
+func FindLeastLossPath(grid HeatGrid, from Coord, to Coord) HeatPath {
+	path := astar.FindPath[Coord](grid, from, to, grid.cost, estimatedCost)
+
+	heatPath := HeatPath{path, int(path.Cost(grid.cost))}
 
 	if isAllowedPath(heatPath) {
 		return heatPath
 	}
+	// fmt.Println("A", "0", "is", heatPath)
 
 	shortestPaths := []HeatPath{heatPath}
 	var candidatePaths []HeatPath
@@ -183,14 +185,20 @@ func FindLeastLossPath(grid Grid, from Coord, to Coord) HeatPath {
 
 			pg := PartialGrid{grid, forbiddenNodes, spurNode, forbiddenDirs}
 
-			spurPath, _, found := Path(HeatTile{spurNode, pg}, HeatTile{to, pg})
-			if found {
+			spurPath := astar.FindPath(pg, spurNode, to, grid.cost, estimatedCost)
+			if spurPath != nil {
 				totalPath := append([]Coord{}, forbiddenNodes...)
 				totalPath = append(totalPath, spurPath...)
 				totalLoss := ComputeTotalLoss(totalPath, grid)
 				newPath := HeatPath{totalPath, totalLoss}
 				// fmt.Println("new path", newPath)
+				// fmt.Println("enqueued are")
+				// for _, cp := range candidatePaths {
+				// 	fmt.Println(cp)
+				// }
+				// fmt.Println()
 				index, found := slices.BinarySearchFunc(candidatePaths, newPath, comparePaths)
+				// fmt.Println("index", index)
 				if !found {
 					candidatePaths = slices.Insert(candidatePaths, index, newPath)
 				}
@@ -198,19 +206,25 @@ func FindLeastLossPath(grid Grid, from Coord, to Coord) HeatPath {
 		}
 
 		newShortest := candidatePaths[0]
-		fmt.Println("new shortest", newShortest.loss, newShortest)
 		if isAllowedPath(newShortest) {
 			return newShortest
 		}
 
 		shortestPaths = append(shortestPaths, newShortest)
 		candidatePaths = candidatePaths[1:]
+
+		// fmt.Println("A", k, "is", newShortest)
+		// fmt.Println("enqueued are")
+		// for _, cp := range candidatePaths {
+		// 	fmt.Println(cp)
+		// }
+		// fmt.Println()
 	}
 }
 
 func PrintPath(steps []Coord, grid Grid) {
 	loss := 0
-	for _, step := range steps {
+	for _, step := range steps[1:] {
 		fmt.Print(step)
 		loss += grid.GetLoss(step)
 		fmt.Println(" -> loss=", loss)
