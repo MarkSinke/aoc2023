@@ -108,8 +108,8 @@ func (c *Cell) HitFrom(d Direction) []Direction {
 }
 
 type Beam struct {
-	coord     Coord
-	Direction Direction
+	coord Coord
+	dir   Direction
 }
 
 func FollowBeam(cells [][]Cell, initial Beam) {
@@ -128,7 +128,7 @@ func FollowBeamStep(cells [][]Cell, beam Beam) []Beam {
 		return []Beam{}
 	}
 
-	newDirs := cells[coord.y][coord.x].HitFrom(beam.Direction)
+	newDirs := cells[coord.y][coord.x].HitFrom(beam.dir)
 
 	var newBeams []Beam
 	for _, Direction := range newDirs {
