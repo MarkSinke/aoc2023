@@ -114,7 +114,7 @@ func PrintConcisely(tiles [][]Tile) {
 			case pipe:
 				fmt.Print(string(tile.asRune()))
 			case undefined:
-				fmt.Print("#")
+				fmt.Print(".")
 			}
 		}
 		fmt.Println()
@@ -339,6 +339,18 @@ func CountIn(tiles [][]Tile) int {
 	for _, tileLine := range tiles {
 		for _, tile := range tileLine {
 			if tile.status == undefined {
+				in++
+			}
+		}
+	}
+	return in
+}
+
+func CountInOrPipe(tiles [][]Tile) int {
+	in := 0
+	for _, tileLine := range tiles {
+		for _, tile := range tileLine {
+			if tile.status == undefined || tile.status == pipe {
 				in++
 			}
 		}
