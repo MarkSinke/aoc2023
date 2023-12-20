@@ -15,6 +15,13 @@ type Direction struct {
 	dy int
 }
 
+func (d Direction) Length() int {
+	if d.dx != 0 {
+		return absDiff(d.dx, 0)
+	}
+	return absDiff(d.dy, 0)
+}
+
 type Status int
 
 const (
