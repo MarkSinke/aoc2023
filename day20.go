@@ -8,6 +8,7 @@ import (
 type Gate interface {
 	ConnectIn(in string)
 	ReceivePulse(p Pulse) []Pulse
+	Reset()
 }
 
 type BroadcasterGate struct {
@@ -29,6 +30,9 @@ func (g *BroadcasterGate) ReceivePulse(p Pulse) []Pulse {
 	return createPulses(p.to, g.outputs, p.value)
 }
 
+func (g *BroadcasterGate) Reset() {
+}
+
 type FlipFlopGate struct {
 	outputs []string
 	state   bool
@@ -44,6 +48,10 @@ func (g *FlipFlopGate) ReceivePulse(p Pulse) []Pulse {
 
 	g.state = !g.state
 	return createPulses(p.to, g.outputs, g.state)
+}
+
+func (g *FlipFlopGate) Reset() {
+	g.state = false
 }
 
 type ConjGate struct {
@@ -72,17 +80,32 @@ func (g *ConjGate) ReceivePulse(p Pulse) []Pulse {
 	return createPulses(p.to, g.outputs, !g.isAllHigh())
 }
 
+func (g *ConjGate) Reset() {
+	for key := range g.inputStates {
+		g.inputStates[key] = false
+	}
+}
+
 type OutputGate struct {
 }
 
-func (g OutputGate) ConnectIn(in string) {
+func (g *OutputGate) ConnectIn(in string) {
 }
 
-func (g OutputGate) ReceivePulse(p Pulse) []Pulse {
+func (g *OutputGate) ReceivePulse(p Pulse) []Pulse {
 	return []Pulse{}
 }
 
+func (g *OutputGate) Reset() {
+}
+
 type GateGraph map[string]*Gate
+
+func (g *GateGraph) Reset() {
+	for _, gate := range *g {
+		(*gate).Reset()
+	}
+}
 
 var gateRegex = regexp.MustCompile(`([%&]?)(.*) -> (.*)`)
 
@@ -138,7 +161,7 @@ func ReadNetwork(path string) GateGraph {
 		for _, output := range outputs {
 			gate := graph[output]
 			if gate == nil {
-				var og Gate = OutputGate{}
+				var og Gate = &OutputGate{}
 				gate = &og
 				graph[output] = gate
 			}
@@ -177,4 +200,34 @@ func ExecNetwork(graph GateGraph) (lowCount int, highCount int) {
 	}
 
 	return
+}
+
+func ExecNetworkUntil(graph GateGraph, to string, value bool) bool {
+	pulses := []Pulse{{"button", "broadcaster", false}}
+	lowRx := false
+
+	for len(pulses) > 0 {
+		pulse := pulses[0]
+		pulses = pulses[1:]
+
+		if pulse.to == to && pulse.value == value {
+			lowRx = true
+		}
+
+		gate := graph[pulse.to]
+		// fmt.Println(pulse.from, pulse.value, "->", pulse.to)
+		newPulses := (*gate).ReceivePulse(pulse)
+
+		pulses = append(pulses, newPulses...)
+	}
+
+	return lowRx
+}
+
+func PressUntilLowRx(graph GateGraph, to string, value bool) int {
+	for count := 1; ; count++ {
+		if ExecNetworkUntil(graph, to, value) {
+			return count
+		}
+	}
 }

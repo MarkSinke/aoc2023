@@ -42,3 +42,23 @@ func TestDay20Input(t *testing.T) {
 
 	fmt.Println("Day 20 result (star 1):", lowSum*highSum)
 }
+
+func TestDay20Star2Input(t *testing.T) {
+	graph := ReadNetwork("day20input.txt")
+
+	// manual analysis of the particular network shows that tx, dd, nz, and ph
+	// are inverters that feed into the final conjunction ls. Hence these need
+	// all to have low inputs before ls output (=rx input) turns low.
+	countTx := PressUntilLowRx(graph, "tx", false)
+	graph.Reset()
+	countDd := PressUntilLowRx(graph, "dd", false)
+	graph.Reset()
+	countNz := PressUntilLowRx(graph, "nz", false)
+	graph.Reset()
+	countPh := PressUntilLowRx(graph, "ph", false)
+	graph.Reset()
+
+	count := LeastCommonMultiple(countTx, countDd, countNz, countPh)
+
+	fmt.Println("Day 20 result (star 2):", count)
+}

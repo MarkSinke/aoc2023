@@ -98,7 +98,7 @@ func lcm2(a int, b int) int {
 	return a * b / gcd(a, b)
 }
 
-func lcm(ints []int) int {
+func LeastCommonMultiple(ints ...int) int {
 	switch len(ints) {
 	case 0:
 		return 0
@@ -120,5 +120,5 @@ func StepsToZzzParallel(lr string, m map[string]Node) int {
 	for _, loc := range locations {
 		stepsOne = append(stepsOne, StepsToZ(loc, lr, m))
 	}
-	return lcm(stepsOne)
+	return LeastCommonMultiple(stepsOne...)
 }
