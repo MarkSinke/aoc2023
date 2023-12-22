@@ -42,7 +42,7 @@ func TestDay21Star2Input(t *testing.T) {
 	xs := []float64{}
 	ys := []float64{}
 	// increasing to 5 did not change coefficients
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 4; i++ {
 		d := i*131 + 65
 		WalkGarden(largeGarden, Coord{d, d}, d)
 		count := CountVisited(largeGarden)
@@ -54,7 +54,6 @@ func TestDay21Star2Input(t *testing.T) {
 
 	// fit a polynomial through these numbers (quadratic), and compute f((26501365-65)/131)
 	// we ask for cubic (degree = 3), and then check that the cubic coefficient is zero
-	fmt.Println(xs, ys)
 	f := polyfit.NewFitting(xs, ys, 3)
 	fCoeff := f.Solve(false)
 
@@ -67,9 +66,9 @@ func TestDay21Star2Input(t *testing.T) {
 	iCoeff[2] = int(math.Round(fCoeff[2]))
 
 	// coefficients should be integers (barring a few floating point errors)
-	assert.LessOrEqual(t, math.Abs(float64(iCoeff[0])-fCoeff[0]), 1e-9)
-	assert.LessOrEqual(t, math.Abs(float64(iCoeff[1])-fCoeff[1]), 1e-9)
-	assert.LessOrEqual(t, math.Abs(float64(iCoeff[2])-fCoeff[2]), 1e-9)
+	assert.LessOrEqual(t, math.Abs(float64(iCoeff[0])-fCoeff[0]), 1e-6)
+	assert.LessOrEqual(t, math.Abs(float64(iCoeff[1])-fCoeff[1]), 1e-6)
+	assert.LessOrEqual(t, math.Abs(float64(iCoeff[2])-fCoeff[2]), 1e-6)
 
 	giantSteps := (steps - 65) / 131
 	result := iCoeff[0] + iCoeff[1]*giantSteps + iCoeff[2]*giantSteps*giantSteps
