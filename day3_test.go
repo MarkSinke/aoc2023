@@ -25,7 +25,7 @@ func TestDay3Input(t *testing.T) {
 
 func TestDay3Star2InputExample(t *testing.T) {
 	engine := ReadFile("day3input_example.txt")
-	gears := GetSymbolCoordSet(engine).findAll('*')
+	gears := GetSymbolCoordSet(engine).FindAll('*')
 	numbers := GetNumbers(engine)
 	sum := computeGearSum(gears, numbers)
 
@@ -47,7 +47,7 @@ func computeGearSum(gears []Coord, numbers []NumberCoord) int {
 
 func TestDay3Star2Input(t *testing.T) {
 	engine := ReadFile("day3input.txt")
-	gears := GetSymbolCoordSet(engine).findAll('*')
+	gears := GetSymbolCoordSet(engine).FindAll('*')
 	numbers := GetNumbers(engine)
 	sum := computeGearSum(gears, numbers)
 

@@ -62,7 +62,7 @@ func (s CoordSet) has(xy Coord) bool {
 	return ok
 }
 
-func (s CoordSet) findAll(r rune) []Coord {
+func (s CoordSet) FindAll(r rune) []Coord {
 	var coords []Coord
 	for coord, rune := range s {
 		if rune == r {
