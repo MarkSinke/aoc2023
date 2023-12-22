@@ -64,6 +64,19 @@ func canStep(garden Garden, c Coord) bool {
 }
 
 func WalkGarden(garden Garden, c Coord, maxSteps int) {
+	if maxSteps%2 == 1 {
+		// for even numbers, we can step back and forth and hence once we visit a square
+		// we can never not end on it. For odd numbers, do a single step from the start node
+		// without marking start, to bootstrap
+		for _, step := range AllDirections {
+			c1 := addDir(c, step)
+			if canStep(garden, c1) {
+				WalkGarden(garden, c1, maxSteps-1)
+			}
+		}
+		return
+	}
+
 	if garden[c.y][c.x].visitedStepsLeft >= maxSteps {
 		return
 	}
@@ -111,4 +124,24 @@ func PrintGarden(garden Garden, start Coord) {
 		fmt.Println()
 	}
 	fmt.Println()
+}
+
+func ResetGarden(garden Garden) {
+	for y := range garden {
+		for x := range garden[0] {
+			garden[y][x].visitedStepsLeft = -1
+		}
+	}
+}
+
+func ExplodeGarden(in Garden, num int) Garden {
+	out := Garden{}
+	for y := 0; y < num*len(in); y++ {
+		line := []GardenPlot{}
+		for x := 0; x < num; x++ {
+			line = append(line, in[y%len(in)]...)
+		}
+		out = append(out, line)
+	}
+	return out
 }
