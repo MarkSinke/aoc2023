@@ -66,19 +66,20 @@ func parseMazeTile(r rune) MazeTile {
 
 func FindLongestPath(m Maze) int {
 	start := Coord{1, 0}
-	return findLongestPath(start, m)
+	return findLongestPath(&m[0][1], start, m)
 }
 
-func findLongestPath(c Coord, m Maze) int {
+func findLongestPath(ptile *MazeTile, c Coord, m Maze) int {
 	maxTailPath := 0
-	m[c.y][c.x].visited = true
-	for _, coord := range m[c.y][c.x].validSteps {
-		if !m[coord.y][coord.x].visited {
-			maxNew := findLongestPath(coord, m) + 1
+	ptile.visited = true
+	for _, coord := range ptile.validSteps {
+		ptile := &m[coord.y][coord.x]
+		if !ptile.visited {
+			maxNew := findLongestPath(ptile, coord, m) + 1
 			maxTailPath = max(maxTailPath, maxNew)
 		}
 	}
-	m[c.y][c.x].visited = false
+	ptile.visited = false
 
 	// must end on bottom right exit
 	if maxTailPath == 0 && (c.x != len(m[0])-2 || c.y != len(m)-1) {
