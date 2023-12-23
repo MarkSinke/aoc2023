@@ -6,16 +6,17 @@ import (
 )
 
 type MazeTile struct {
-	path    bool
-	slope   Direction
-	visited bool
+	path       bool
+	slope      Direction
+	visited    bool
+	validSteps []Coord
 }
 
 type Maze [][]MazeTile
 
 func (m Maze) isValidStep(c Coord) bool {
 	inMaze := c.x >= 0 && c.x < len(m[0]) && c.y >= 0 && c.y < len(m)
-	return inMaze && m[c.y][c.x].path && !m[c.y][c.x].visited
+	return inMaze && m[c.y][c.x].path
 }
 
 func ReadMaze(path string) Maze {
@@ -30,6 +31,9 @@ func ReadMaze(path string) Maze {
 		mazeLine := parseMazeLine(line)
 		maze = append(maze, mazeLine)
 	}
+
+	precomputeValidSteps(maze)
+
 	return maze
 }
 
@@ -68,9 +72,11 @@ func FindLongestPath(m Maze) int {
 func findLongestPath(c Coord, m Maze) int {
 	maxTailPath := 0
 	m[c.y][c.x].visited = true
-	for _, coord := range findNextSteps(c, m) {
-		maxNew := findLongestPath(coord, m) + 1
-		maxTailPath = max(maxTailPath, maxNew)
+	for _, coord := range m[c.y][c.x].validSteps {
+		if !m[coord.y][coord.x].visited {
+			maxNew := findLongestPath(coord, m) + 1
+			maxTailPath = max(maxTailPath, maxNew)
+		}
 	}
 	m[c.y][c.x].visited = false
 
@@ -105,6 +111,16 @@ func FlattenSlopes(m Maze) {
 	for y := range m {
 		for x := range m[0] {
 			m[y][x].slope = Direction{0, 0}
+		}
+	}
+
+	precomputeValidSteps(m)
+}
+
+func precomputeValidSteps(m Maze) {
+	for y := range m {
+		for x := range m[0] {
+			m[y][x].validSteps = findNextSteps(Coord{x, y}, m)
 		}
 	}
 }
