@@ -1,5 +1,10 @@
 package aoc2023
 
+import (
+	"fmt"
+	"slices"
+)
+
 type MazeTile struct {
 	path    bool
 	slope   Direction
@@ -61,14 +66,19 @@ func FindLongestPath(m Maze) int {
 }
 
 func findLongestPath(c Coord, m Maze) int {
-	maxTail := 0
+	maxTailPath := 0
 	m[c.y][c.x].visited = true
 	for _, coord := range findNextSteps(c, m) {
 		maxNew := findLongestPath(coord, m) + 1
-		maxTail = max(maxTail, maxNew)
+		maxTailPath = max(maxTailPath, maxNew)
 	}
 	m[c.y][c.x].visited = false
-	return maxTail
+
+	// must end on bottom right exit
+	if maxTailPath == 0 && (c.x != len(m[0])-2 || c.y != len(m)-1) {
+		return -1000
+	}
+	return maxTailPath
 }
 
 func findNextSteps(c Coord, m Maze) []Coord {
@@ -81,7 +91,7 @@ func findNextSteps(c Coord, m Maze) []Coord {
 		return []Coord{newCoord}
 	}
 
-	coords := []Coord{}
+	coords := make([]Coord, 0, 4)
 	for _, dir := range AllDirections {
 		newCoord := AddDir(c, dir)
 		if m.isValidStep(newCoord) {
@@ -96,5 +106,20 @@ func FlattenSlopes(m Maze) {
 		for x := range m[0] {
 			m[y][x].slope = Direction{0, 0}
 		}
+	}
+}
+
+func PrintMazePath(m Maze, coords []Coord) {
+	for y := range m {
+		for x := range m[0] {
+			if slices.Index(coords, Coord{x, y}) != -1 {
+				fmt.Print("O")
+			} else if m[y][x].path {
+				fmt.Print(".")
+			} else {
+				fmt.Print("#")
+			}
+		}
+		fmt.Println()
 	}
 }

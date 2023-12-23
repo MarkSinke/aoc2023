@@ -32,3 +32,13 @@ func TestDay23Star2InputExample(t *testing.T) {
 
 	assert.Equal(t, 154, res)
 }
+
+func TestDay23Star2Input(t *testing.T) {
+	maze := ReadMaze("day23input.txt")
+
+	FlattenSlopes(maze)
+
+	res := FindLongestPath(maze)
+
+	fmt.Println("Day 23 result (star 2):", res)
+}
