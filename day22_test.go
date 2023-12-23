@@ -22,7 +22,7 @@ func TestDay22Input(t *testing.T) {
 	DropBricks(bricks)
 	res := CountDisintegratable(bricks)
 
-	fmt.Println("Day 22 (star 1) result:", res)
+	fmt.Println("Day 22 result (star 1):", res)
 }
 func TestDay22Star2InputExample(t *testing.T) {
 	bricks := ReadBricks("day22input_example.txt")
@@ -39,5 +39,5 @@ func TestDay22Star2Input(t *testing.T) {
 	DropBricks(bricks)
 	res := CountDisintegrationFalls(bricks)
 
-	fmt.Println("Day 22 (star 2) result:", res)
+	fmt.Println("Day 22 result (star 2):", res)
 }
