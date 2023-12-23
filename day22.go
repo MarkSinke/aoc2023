@@ -137,24 +137,22 @@ func DropBricks(bricks []Brick) {
 	}
 }
 
-func CountDisintegratable(bricks []Brick) int {
-	// a brick can disintegrate if it's not supporting any bricks by itself only
-	// i.e. supportedBy[b] > 1
-	supportedBy := map[Brick]int{}
+func computeSupportStructure(bricks []Brick) (map[Brick][]Brick, map[Brick][]Brick) {
 	supports := map[Brick][]Brick{}
+	supportedBy := map[Brick][]Brick{}
 
 	for _, b0 := range bricks {
 		for _, b1 := range bricks {
 			if b0.Supports(b1) {
-				count, found := supportedBy[b1]
+				list, found := supportedBy[b1]
 				if !found {
-					count = 1
+					list = []Brick{b0}
 				} else {
-					count++
+					list = append(list, b0)
 				}
-				supportedBy[b1] = count
+				supportedBy[b1] = list
 
-				list, found := supports[b0]
+				list, found = supports[b0]
 				if !found {
 					list = []Brick{b1}
 				} else {
@@ -165,6 +163,13 @@ func CountDisintegratable(bricks []Brick) int {
 		}
 	}
 
+	return supports, supportedBy
+}
+
+func CountDisintegratable(bricks []Brick) int {
+	supports, supportedBy := computeSupportStructure(bricks)
+	// a brick can disintegrate if it's not supporting any bricks by itself only
+	// i.e. supportedBy[b] > 1
 	res := 0
 	for _, b := range bricks {
 		if isDisintegratable(b, supports, supportedBy) {
@@ -175,13 +180,50 @@ func CountDisintegratable(bricks []Brick) int {
 	return res
 }
 
-func isDisintegratable(b Brick, supports map[Brick][]Brick, supportedBy map[Brick]int) bool {
+func isDisintegratable(b Brick, supports map[Brick][]Brick, supportedBy map[Brick][]Brick) bool {
 	aboves := supports[b]
 	for _, above := range aboves {
-		if supportedBy[above] == 1 {
+		if len(supportedBy[above]) == 1 {
 			return false
 		}
 	}
 
 	return true
+}
+
+func isAllFalling(falling map[Brick]bool, bricks []Brick) bool {
+	for _, brick := range bricks {
+		if !falling[brick] {
+			return false
+		}
+	}
+	return true
+}
+
+func computeFalls(b Brick, supports map[Brick][]Brick, supportedBy map[Brick][]Brick) int {
+	falling := map[Brick]bool{b: true}
+	toCheck := []Brick{}
+	toCheck = append(toCheck, supports[b]...)
+	for len(toCheck) > 0 {
+		b := toCheck[0]
+		toCheck = toCheck[1:]
+
+		below := supportedBy[b]
+		if isAllFalling(falling, below) {
+			falling[b] = true
+			toCheck = append(toCheck, supports[b]...)
+		}
+	}
+	return len(falling) - 1 // first block is disintegrated, not falling
+}
+
+func CountDisintegrationFalls(bricks []Brick) int {
+	supports, supportedBy := computeSupportStructure(bricks)
+
+	totalFalls := 0
+	for _, brick := range bricks {
+		totalFalls += computeFalls(brick, supports, supportedBy)
+	}
+
+	return totalFalls
 }
