@@ -54,7 +54,7 @@ var twoSteps = [][]Direction{
 	{West, West},
 }
 
-func addDir(c Coord, d Direction) Coord {
+func AddDir(c Coord, d Direction) Coord {
 	return Coord{c.x + d.dx, c.y + d.dy}
 }
 
@@ -69,7 +69,7 @@ func WalkGarden(garden Garden, c Coord, maxSteps int) {
 		// we can never not end on it. For odd numbers, do a single step from the start node
 		// without marking start, to bootstrap
 		for _, step := range AllDirections {
-			c1 := addDir(c, step)
+			c1 := AddDir(c, step)
 			if canStep(garden, c1) {
 				WalkGarden(garden, c1, maxSteps-1)
 			}
@@ -87,8 +87,8 @@ func WalkGarden(garden Garden, c Coord, maxSteps int) {
 	}
 
 	for _, twoStep := range twoSteps {
-		c1 := addDir(c, twoStep[0])
-		c2 := addDir(c1, twoStep[1])
+		c1 := AddDir(c, twoStep[0])
+		c2 := AddDir(c1, twoStep[1])
 		if canStep(garden, c1) && canStep(garden, c2) {
 			WalkGarden(garden, c2, maxSteps-2)
 		}
