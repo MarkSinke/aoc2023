@@ -2,7 +2,7 @@ package aoc2023
 
 import (
 	"fmt"
-	"math"
+	"math/big"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -29,8 +29,8 @@ func TestDay24Star2InputExample(t *testing.T) {
 
 	h := ComputeIntersectingHailStone(hails, 7, 27)
 
-	assert.Equal(t, Coord3F{24, 13, 10}, h.pos)
-	assert.Equal(t, Dir3F{-3, 1, 2}, h.dir)
+	assert.Equal(t, Coord3F{big.NewInt(24), big.NewInt(13), big.NewInt(10)}, h.pos)
+	assert.Equal(t, Dir3F{big.NewInt(-3), big.NewInt(1), big.NewInt(2)}, h.dir)
 }
 
 func TestDay24Star2Input(t *testing.T) {
@@ -38,8 +38,10 @@ func TestDay24Star2Input(t *testing.T) {
 
 	h := ComputeIntersectingHailStone(hails, 2e14, 4e14)
 
-	fmt.Println("h", h)
-	fmt.Println("Day 24 result (star 2):", int(math.Round(h.pos.x+h.pos.y+h.pos.z)))
-	assert.Equal(t, Coord3F{24, 13, 10}, h.pos)
-	assert.Equal(t, Dir3F{-3, 1, 2}, h.dir)
+	var sum big.Int
+	sum.Add(h.pos.x, h.pos.y)
+	sum.Add(&sum, h.pos.z)
+
+	fmt.Println("Day 24 result (star 2):", sum.String())
+	assert.Equal(t, big.NewInt(1004774995964534), &sum)
 }

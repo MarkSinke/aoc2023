@@ -1,16 +1,18 @@
 package aoc2023
 
 import (
-	"fmt"
-	"math"
+	"math/big"
 	"regexp"
-	"strconv"
 )
 
 type Coord3F struct {
-	x float64
-	y float64
-	z float64
+	x *big.Int
+	y *big.Int
+	z *big.Int
+}
+
+func (c Coord3F) String() string {
+	return "{" + c.x.String() + "," + c.y.String() + "," + c.z.String() + "}"
 }
 
 func (c Coord3F) ToDir() Dir3F {
@@ -18,46 +20,88 @@ func (c Coord3F) ToDir() Dir3F {
 }
 
 type Dir3F struct {
-	dx float64
-	dy float64
-	dz float64
+	dx *big.Int
+	dy *big.Int
+	dz *big.Int
 }
 
-func (d Dir3F) Length() float64 {
-	return math.Sqrt(d.dx*d.dx + d.dy*d.dy + d.dz*d.dz)
+func (d Dir3F) String() string {
+	return "{" + d.dx.String() + "," + d.dy.String() + "," + d.dz.String() + "}"
 }
 
-func (d Dir3F) Times(f float64) Dir3F {
-	return Dir3F{d.dx * f, d.dy * f, d.dz * f}
+func (d Dir3F) Times(f *big.Int) Dir3F {
+	var dx big.Int
+	dx.Mul(d.dx, f)
+	var dy big.Int
+	dy.Mul(d.dy, f)
+	var dz big.Int
+	dz.Mul(d.dz, f)
+	return Dir3F{&dx, &dy, &dz}
 }
 
-func (d Dir3F) DivideBy(f float64) Dir3F {
-	return Dir3F{d.dx / f, d.dy / f, d.dz / f}
+func (d Dir3F) DivideBy(f *big.Int) Dir3F {
+	var dx big.Int
+	dx.Div(d.dx, f)
+	var dy big.Int
+	dy.Div(d.dy, f)
+	var dz big.Int
+	dz.Div(d.dz, f)
+	return Dir3F{&dx, &dy, &dz}
 }
 
 func (d0 Dir3F) Plus(d1 Dir3F) Dir3F {
-	return Dir3F{d0.dx + d1.dx, d0.dy + d1.dy, d0.dz + d1.dz}
+	var dx big.Int
+	dx.Add(d0.dx, d1.dx)
+	var dy big.Int
+	dy.Add(d0.dy, d1.dy)
+	var dz big.Int
+	dz.Add(d0.dz, d1.dz)
+	return Dir3F{&dx, &dy, &dz}
 }
 
 func (d0 Dir3F) Minus(d1 Dir3F) Dir3F {
-	return Dir3F{d0.dx - d1.dx, d0.dy - d1.dy, d0.dz - d1.dz}
+	var dx big.Int
+	dx.Sub(d0.dx, d1.dx)
+	var dy big.Int
+	dy.Sub(d0.dy, d1.dy)
+	var dz big.Int
+	dz.Sub(d0.dz, d1.dz)
+	return Dir3F{&dx, &dy, &dz}
 }
 
 func (c Coord3F) Plus(d Dir3F) Coord3F {
-	return Coord3F{c.x + d.dx, c.y + d.dy, c.z + d.dz}
-}
-
-func (c0 Coord3F) MinusToDir(c1 Coord3F) Dir3F {
-	return Dir3F{c0.x - c1.x, c0.y - c1.y, c0.z - c1.z}
+	var x big.Int
+	x.Add(c.x, d.dx)
+	var y big.Int
+	y.Add(c.y, d.dy)
+	var z big.Int
+	z.Add(c.z, d.dz)
+	return Coord3F{&x, &y, &z}
 }
 
 func (c Coord3F) Minus(d Dir3F) Coord3F {
-	return Coord3F{c.x - d.dx, c.y - d.dy, c.z - d.dz}
+	var x big.Int
+	x.Sub(c.x, d.dx)
+	var y big.Int
+	y.Sub(c.y, d.dy)
+	var z big.Int
+	z.Sub(c.z, d.dz)
+	return Coord3F{&x, &y, &z}
+}
+
+func (c0 Coord3F) MinusToDir(c1 Coord3F) Dir3F {
+	var x big.Int
+	x.Sub(c0.x, c1.x)
+	var y big.Int
+	y.Sub(c0.y, c1.y)
+	var z big.Int
+	z.Sub(c0.z, c1.z)
+	return Dir3F{&x, &y, &z}
 }
 
 type Coord2F struct {
-	x float64
-	y float64
+	x *big.Int
+	y *big.Int
 }
 
 type HailStone struct {
@@ -65,9 +109,14 @@ type HailStone struct {
 	dir Dir3F
 }
 
-func toFloat(str string) float64 {
-	f, _ := strconv.ParseFloat(str, 64)
-	return f
+func (h HailStone) String() string {
+	return "{" + h.pos.String() + " " + h.dir.String() + "}"
+}
+
+func toBigInt(str string) *big.Int {
+	var x big.Int
+	x.SetString(str, 10)
+	return &x
 }
 
 var hailRegex = regexp.MustCompile(`(-?\d+),\s+(-?\d+),\s+(-?\d+)\s+@\s+(-?\d+),\s+(-?\d+),\s+(-?\d+)`)
@@ -89,12 +138,14 @@ func ReadHail(path string) []HailStone {
 func parseHail(str string) HailStone {
 	matches := hailRegex.FindStringSubmatch(str)
 
-	pos := Coord3F{toFloat(matches[1]), toFloat(matches[2]), toFloat(matches[3])}
-	dir := Dir3F{toFloat(matches[4]), toFloat(matches[5]), toFloat(matches[6])}
+	pos := Coord3F{toBigInt(matches[1]), toBigInt(matches[2]), toBigInt(matches[3])}
+	dir := Dir3F{toBigInt(matches[4]), toBigInt(matches[5]), toBigInt(matches[6])}
 	return HailStone{pos, dir}
 }
 
-func intersectXY(h1 HailStone, h2 HailStone) (float64, float64, *Coord2F) {
+var zero *big.Int = big.NewInt(0)
+
+func intersectXY(h1 HailStone, h2 HailStone) *Coord2F {
 	// intersect the line h1 and h2 - for some t1 ant t2 (float):
 	// (h1.pos.x + h1.dir.dx * t1, h1.pos.y + h1.dir.dy * t1) = (h2.pos.x + h2.dir.dx * t2, h2.pos.y + h2.dir.dy * t2)
 	// i.e.,
@@ -118,30 +169,62 @@ func intersectXY(h1 HailStone, h2 HailStone) (float64, float64, *Coord2F) {
 	// -> (divide both sides by the t2 multiplier)
 	// t2 = (h2.pos.y - h1.pos.y) * h1.dir.dx - (h2.pos.x - h1.pos.x) * h1.dir.dy /
 	//         (h2.dir.dx * h1.dir.dy - h2.dir.dy * h1.dir.dx)
-	denom := h2.dir.dx*h1.dir.dy - h2.dir.dy*h1.dir.dx
-	if denom == 0 {
+	//
+	// denom := h2.dir.dx * h1.dir.dy - h2.dir.dy * h1.dir.dx
+	var denom1 big.Int
+	denom1.Mul(h2.dir.dx, h1.dir.dy)
+	var denom2 big.Int
+	denom2.Mul(h2.dir.dy, h1.dir.dx)
+	var denom big.Int
+	denom.Sub(&denom1, &denom2)
+	if denom.Cmp(zero) == 0 {
 		// parallel
-		return 0, 0, nil
+		return nil
 	}
-	t2 := ((h2.pos.y-h1.pos.y)*h1.dir.dx - (h2.pos.x-h1.pos.x)*h1.dir.dy) / denom
-	t1 := (h2.pos.x - h1.pos.x + h2.dir.dx*t2) / h1.dir.dx
-	if t1 < 0.0 || t2 < 0.0 {
+	// t2 := ((h2.pos.y-h1.pos.y)*h1.dir.dx - (h2.pos.x-h1.pos.x)*h1.dir.dy) / denom
+	var t2a big.Int
+	t2a.Sub(h2.pos.y, h1.pos.y)
+	t2a.Mul(&t2a, h1.dir.dx)
+	var t2b big.Int
+	t2b.Sub(h2.pos.x, h1.pos.x)
+	t2b.Mul(&t2b, h1.dir.dy)
+	var t2 big.Int
+	t2.Sub(&t2a, &t2b)
+	t2.Div(&t2, &denom)
+
+	// t1 := (h2.pos.x - h1.pos.x + h2.dir.dx*t2) / h1.dir.dx
+	var t1 big.Int
+	t1.Mul(h2.dir.dx, &t2)
+	t1.Add(&t1, h2.pos.x)
+	t1.Sub(&t1, h1.pos.x)
+	t1.Sub(&t1, h1.dir.dx)
+	if t1.Cmp(zero) < 0 || t2.Cmp(zero) < 0 {
 		// crossed in the past
-		return 0, 0, nil
+		return nil
 	}
-	return t1, t2, &Coord2F{float64(h2.pos.x) + t2*float64(h2.dir.dx), float64(h2.pos.y) + t2*float64(h2.dir.dy)}
+
+	var x big.Int // h2.pos.x + t2*h2.dir.dx
+	x.Mul(&t2, h2.dir.dx)
+	x.Add(&x, h2.pos.x)
+	var y big.Int // h2.pos.y + t2*h2.dir.dy
+	y.Mul(&t2, h2.dir.dy)
+	y.Add(&y, h2.pos.y)
+	return &Coord2F{&x, &y}
 }
 
-func CountIntersectionPairs(hails []HailStone, min float64, max float64) int {
+func CountIntersectionPairs(hails []HailStone, min int64, max int64) int {
 	count := 0
 
+	bigMin := big.NewInt(min)
+	bigMax := big.NewInt(max)
 	for i := range hails {
 		for j := i + 1; j < len(hails); j++ {
 			h1 := hails[i]
 			h2 := hails[j]
 
-			_, _, c := intersectXY(h1, h2)
-			if c != nil && c.x >= min && c.x <= max && c.y >= min && c.y <= max {
+			c := intersectXY(h1, h2)
+			if c != nil && c.x.Cmp(bigMin) >= 0 && c.x.Cmp(bigMax) <= 0 &&
+				c.y.Cmp(bigMin) >= 0 && c.y.Cmp(bigMax) <= 0 {
 				count++
 			}
 		}
@@ -150,81 +233,60 @@ func CountIntersectionPairs(hails []HailStone, min float64, max float64) int {
 	return count
 }
 
-func FindIntersectionPairsXY(hails []HailStone, min float64, max float64) (HailStone, HailStone, HailStone, HailStone) {
-	found := []HailStone{}
-
-	for i := range hails {
-		for j := i + 1; j < len(hails); j++ {
-			h1 := hails[i]
-			h2 := hails[j]
-
-			_, _, c := intersectXY(h1, h2)
-			if c != nil && c.x >= min && c.x <= max && c.y >= min && c.y <= max {
-				found = append(found, h1, h2)
-			}
-
-			if len(found) == 4 {
-				return found[0], found[1], found[2], found[3]
-			}
-		}
-	}
-
-	panic("need two intersecting pairs in XY")
-}
-
 func crossProduct(d0, d1 Dir3F) Dir3F {
-	return Dir3F{d0.dy*d1.dz - d0.dz*d1.dy, d0.dz*d1.dx - d0.dx*d1.dz, d0.dx*d1.dy - d0.dy*d1.dx}
+	// dx := d0.dy*d1.dz - d0.dz*d1.dy
+	var dx1 big.Int
+	dx1.Mul(d0.dy, d1.dz)
+	var dx2 big.Int
+	dx2.Mul(d0.dz, d1.dy)
+	var dx big.Int
+	dx.Sub(&dx1, &dx2)
+
+	// dy := d0.dz*d1.dx - d0.dx*d1.dz
+	var dy1 big.Int
+	dy1.Mul(d0.dz, d1.dx)
+	var dy2 big.Int
+	dy2.Mul(d0.dx, d1.dz)
+	var dy big.Int
+	dy.Sub(&dy1, &dy2)
+
+	// dz := d0.dx*d1.dy - d0.dy*d1.dx
+	var dz1 big.Int
+	dz1.Mul(d0.dx, d1.dy)
+	var dz2 big.Int
+	dz2.Mul(d0.dy, d1.dx)
+	var dz big.Int
+	dz.Sub(&dz1, &dz2)
+
+	return Dir3F{&dx, &dy, &dz}
 }
 
-func dotProduct(d0, d1 Dir3F) float64 {
-	return d0.dx*d1.dx + d0.dy*d1.dy + d0.dz*d1.dz
-}
+func dotProduct(d0, d1 Dir3F) *big.Int {
+	// r := d0.dx*d1.dx + d0.dy*d1.dy + d0.dz*d1.dz
+	var rx big.Int
+	rx.Mul(d0.dx, d1.dx)
+	var ry big.Int
+	ry.Mul(d0.dy, d1.dy)
+	var rz big.Int
+	rz.Mul(d0.dz, d1.dz)
 
-func isClose(a, b float64) bool {
-	return math.Abs(a-b) < 1e-5
-}
+	var r big.Int
+	r.Add(&rx, &ry)
+	r.Add(&r, &rz)
 
-func findParallelPair(hails []HailStone) (HailStone, HailStone) {
-	for i := range hails {
-		for j := i + 1; j < len(hails); j++ {
-			h0 := hails[i]
-			l0 := h0.dir.Length()
-			h1 := hails[j]
-			l1 := h1.dir.Length()
-			if isClose(h0.dir.dx/l0, h1.dir.dx/l1) &&
-				isClose(h0.dir.dy/l0, h1.dir.dy/l1) &&
-				isClose(h0.dir.dz/l0, h1.dir.dz/l1) {
-				return h0, h1
-			}
-		}
-	}
-	panic("no parallel pair")
-}
-
-func findTwoOtherStones(h0, h1 HailStone, n Dir3F, hails []HailStone) (HailStone, HailStone) {
-	found := []HailStone{}
-
-	for _, h := range hails {
-		if h != h0 && h != h1 && dotProduct(h.dir, n) != 0 {
-			found = append(found, h)
-		}
-		if len(found) == 2 {
-			return found[0], found[1]
-		}
-	}
-	panic("too few hail stones")
+	return &r
 }
 
 // intersect the plane defined by the point p0 and its normal vector n
 // and the line defined by h
 // See https://en.wikipedia.org/wiki/Line%E2%80%93plane_intersection
-func intersectPlaneAndLine(p0 Coord3F, n Dir3F, h HailStone) (Coord3F, float64) {
+func intersectPlaneAndLine(p0 Coord3F, n Dir3F, h HailStone) (Coord3F, *big.Int) {
 	a := dotProduct(p0.MinusToDir(h.pos), n)
 	b := dotProduct(h.dir, n)
-	t := a / b
-	fmt.Println("h", h, "a", a, "b", b, "t", t)
-	p := h.pos.Plus(h.dir.Times(t))
-	return p, t
+	var t big.Int
+	t.Div(a, b)
+	p := h.pos.Plus(h.dir.Times(&t))
+	return p, &t
 }
 
 func ComputeIntersectingHailStone(hails []HailStone, min, max float64) HailStone {
@@ -247,32 +309,18 @@ func ComputeIntersectingHailStone(hails []HailStone, min, max float64) HailStone
 	p10 := h1.pos
 	p11 := h1.pos.Plus(h1.dir)
 	n := crossProduct(p10.ToDir(), p11.ToDir())
-	fmt.Println("h0", hailsR[0], "h1", h1)
-	fmt.Println("p10", p10, "p11", p11)
-	fmt.Println("n", n)
 
 	h2 := hailsR[2]
 	h3 := hailsR[3]
-	fmt.Println("h2", h2, "h3", h3)
 
-	p0 := Coord3F{0, 0, 0}
+	p0 := Coord3F{zero, zero, zero}
 	p2, t2 := intersectPlaneAndLine(p0, n, h2)
-	fmt.Println("p2", p2, "t2", t2)
 	p3, t3 := intersectPlaneAndLine(p0, n, h3)
-	fmt.Println("p3", p3, "t3", t3)
 
-	fmt.Println("t2-t3", t2-t3)
-	dir := p2.MinusToDir(p3).DivideBy(t2 - t3)
-	fmt.Println("dir before round", dir)
-	fmt.Println("t2 diff", t2-math.Round(t2))
-	fmt.Println("t3 diff", t3-math.Round(t3))
-	// fix some floating point errors by rounding
-	dir = Dir3F{math.Round(dir.dx), math.Round(dir.dy), math.Round(dir.dz)}
-	//	t2 = math.Round(t2)
+	var diffT big.Int
+	diffT.Sub(t2, t3)
+	dir := p2.MinusToDir(p3).DivideBy(&diffT)
 	pos := p2.Minus(dir.Times(t2))
-	fmt.Println("dir", dir, "pos", pos)
 
-	res := HailStone{pos.Plus(h0shift), dir.Plus(h0dir)}
-	fmt.Println("res", res)
-	return res
+	return HailStone{pos.Plus(h0shift), dir.Plus(h0dir)}
 }
