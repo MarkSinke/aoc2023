@@ -18,7 +18,7 @@ func TestDay16InputExample(t *testing.T) {
 }
 
 func TestDay16Input(t *testing.T) {
-	cells := ReadContraption("day16input.txt")
+	cells := ReadContraption("../aoc_inputs/2023/day16input.txt")
 
 	FollowBeam(cells, Beam{Coord{0, 0}, East})
 
@@ -45,7 +45,7 @@ func TestDay16Star2InputExampleMax(t *testing.T) {
 }
 
 func TestDay16Star2Input(t *testing.T) {
-	cells := ReadContraption("day16input.txt")
+	cells := ReadContraption("../aoc_inputs/2023/day16input.txt")
 
 	sum := FindMaxBeam(cells)
 

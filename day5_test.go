@@ -33,7 +33,7 @@ func TestDay5InputExammple(t *testing.T) {
 }
 
 func TestDay5Input(t *testing.T) {
-	seeds, maps := ReadSeedMaps("day5input.txt")
+	seeds, maps := ReadSeedMaps("../aoc_inputs/2023/day5input.txt")
 	res := MapSeedsThroughMaps(seeds, maps)
 	m := Min(res)
 
@@ -58,7 +58,7 @@ func seedsToRanges(seeds []int) []Range {
 }
 
 func TestDay5Star2Input(t *testing.T) {
-	seeds, maps := ReadSeedMaps("day5input.txt")
+	seeds, maps := ReadSeedMaps("../aoc_inputs/2023/day5input.txt")
 	ranges := seedsToRanges(seeds)
 	res := MapRangesThroughMaps(ranges, maps)
 	m := MinOfRanges(res)

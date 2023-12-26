@@ -24,7 +24,7 @@ func TestDay17InputExample2(t *testing.T) {
 }
 
 func TestDay17Input(t *testing.T) {
-	grid := ReadHeatLossGrid("day17input.txt")
+	grid := ReadHeatLossGrid("../aoc_inputs/2023/day17input.txt")
 
 	_, cost := FindLeastLossPath(grid, 1, 3)
 
@@ -40,7 +40,7 @@ func TestDay17Star2InputExample(t *testing.T) {
 }
 
 func TestDay17Star2Input(t *testing.T) {
-	grid := ReadHeatLossGrid("day17input.txt")
+	grid := ReadHeatLossGrid("../aoc_inputs/2023/day17input.txt")
 
 	_, cost := FindLeastLossPath(grid, 4, 10)
 

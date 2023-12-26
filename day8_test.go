@@ -16,7 +16,7 @@ func TestDay8InputExample(t *testing.T) {
 }
 
 func TestDay8Input(t *testing.T) {
-	lr, nodes := ReadLRMap("day8input.txt")
+	lr, nodes := ReadLRMap("../aoc_inputs/2023/day8input.txt")
 
 	steps := StepsToZzz(lr, nodes)
 
@@ -32,7 +32,7 @@ func TestDay8Star2InputExample(t *testing.T) {
 }
 
 func TestDay8Star2Input(t *testing.T) {
-	lr, nodes := ReadLRMap("day8input.txt")
+	lr, nodes := ReadLRMap("../aoc_inputs/2023/day8input.txt")
 
 	steps := StepsToZzzParallel(lr, nodes)
 

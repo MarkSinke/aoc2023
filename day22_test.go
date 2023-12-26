@@ -17,7 +17,7 @@ func TestDay22InputExample(t *testing.T) {
 }
 
 func TestDay22Input(t *testing.T) {
-	bricks := ReadBricks("day22input.txt")
+	bricks := ReadBricks("../aoc_inputs/2023/day22input.txt")
 
 	DropBricks(bricks)
 	res := CountDisintegratable(bricks)
@@ -34,7 +34,7 @@ func TestDay22Star2InputExample(t *testing.T) {
 }
 
 func TestDay22Star2Input(t *testing.T) {
-	bricks := ReadBricks("day22input.txt")
+	bricks := ReadBricks("../aoc_inputs/2023/day22input.txt")
 
 	DropBricks(bricks)
 	res := CountDisintegrationFalls(bricks)

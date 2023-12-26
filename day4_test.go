@@ -15,7 +15,7 @@ func TestDay4InputExample(t *testing.T) {
 }
 
 func TestDay4Input(t *testing.T) {
-	cards := ReadGameCards(("day4input.txt"))
+	cards := ReadGameCards(("../aoc_inputs/2023/day4input.txt"))
 	total := sumOfScores(cards)
 
 	fmt.Printf("Day 4 result (star 1): %v\n", total)
@@ -38,7 +38,7 @@ func TestDay4Star2InputExample(t *testing.T) {
 }
 
 func TestDay4Star2Input(t *testing.T) {
-	cards := ReadGameCards(("day4input.txt"))
+	cards := ReadGameCards(("../aoc_inputs/2023/day4input.txt"))
 	counts := ComputeCardCounts(cards)
 	total := Sum(counts)
 

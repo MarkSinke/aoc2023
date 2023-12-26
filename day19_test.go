@@ -18,7 +18,7 @@ func TestDay19InputExample(t *testing.T) {
 }
 
 func TestDay19Input(t *testing.T) {
-	program, parts := ReadWorkflowsAndParts("day19input.txt")
+	program, parts := ReadWorkflowsAndParts("../aoc_inputs/2023/day19input.txt")
 
 	accepted := ExecuteProgram(program, parts)
 
@@ -38,7 +38,7 @@ func TestDay19Star2InputExample(t *testing.T) {
 }
 
 func TestDay19Star2Input(t *testing.T) {
-	program, _ := ReadWorkflowsAndParts("day19input.txt")
+	program, _ := ReadWorkflowsAndParts("../aoc_inputs/2023/day19input.txt")
 
 	accepted := InspectProgram(program)
 

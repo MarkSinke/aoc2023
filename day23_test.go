@@ -16,7 +16,7 @@ func TestDay23InputExample(t *testing.T) {
 }
 
 func TestDay23Input(t *testing.T) {
-	maze := ReadMaze("day23input.txt")
+	maze := ReadMaze("../aoc_inputs/2023/day23input.txt")
 
 	res := FindLongestPath(maze)
 
@@ -34,7 +34,7 @@ func TestDay23Star2InputExample(t *testing.T) {
 }
 
 func XTestDay23Star2Input(t *testing.T) {
-	maze := ReadMaze("day23input.txt")
+	maze := ReadMaze("../aoc_inputs/2023/day23input.txt")
 
 	FlattenSlopes(maze)
 

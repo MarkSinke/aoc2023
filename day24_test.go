@@ -17,7 +17,7 @@ func TestDay24InputExample(t *testing.T) {
 }
 
 func TestDay24Input(t *testing.T) {
-	hails := ReadHail("day24input.txt")
+	hails := ReadHail("../aoc_inputs/2023/day24input.txt")
 
 	count := CountIntersectionPairs(hails, 2e14, 4e14)
 
@@ -34,7 +34,7 @@ func TestDay24Star2InputExample(t *testing.T) {
 }
 
 func TestDay24Star2Input(t *testing.T) {
-	hails := ReadHail("day24input.txt")
+	hails := ReadHail("../aoc_inputs/2023/day24input.txt")
 
 	h := ComputeIntersectingHailStone(hails, 2e14, 4e14)
 

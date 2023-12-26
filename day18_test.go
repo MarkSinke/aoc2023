@@ -17,7 +17,7 @@ func TestDay18InputExample(t *testing.T) {
 }
 
 func TestDay18Input(t *testing.T) {
-	steps := ReadDigPlan("day18input.txt")
+	steps := ReadDigPlan("../aoc_inputs/2023/day18input.txt")
 
 	coords := ComputeCoords(steps)
 	area := ComputePolygonArea(coords)
@@ -36,7 +36,7 @@ func TestDay18Star2InputExample(t *testing.T) {
 }
 
 func TestDay18Star2Input(t *testing.T) {
-	steps := ReadDigPlan2("day18input.txt")
+	steps := ReadDigPlan2("../aoc_inputs/2023/day18input.txt")
 
 	coords := ComputeCoords(steps)
 	area := ComputePolygonArea(coords)

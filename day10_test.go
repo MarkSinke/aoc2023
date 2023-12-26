@@ -22,7 +22,7 @@ func TestDay10InputExample2(t *testing.T) {
 }
 
 func TestDay10Input(t *testing.T) {
-	tiles := ReadTiles("day10input.txt")
+	tiles := ReadTiles("../aoc_inputs/2023/day10input.txt")
 	loopLen := FindLoopLen(tiles)
 	steps := loopLen / 2
 
@@ -41,7 +41,7 @@ func TestDay10Star2InputExample2(t *testing.T) {
 }
 
 func TestDay10Star2Input(t *testing.T) {
-	tiles := ReadTiles("day10input.txt")
+	tiles := ReadTiles("../aoc_inputs/2023/day10input.txt")
 	main := CopyMainLoop(tiles)
 	// we need to explode and implode to make sure every point outside can be reached via a path
 	// exploding makes sure such paths exist

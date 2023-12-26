@@ -22,7 +22,7 @@ func TestDay12InputExample(t *testing.T) {
 }
 
 func TestDay12Input(t *testing.T) {
-	records := ReadSpringRecords("day12input.txt")
+	records := ReadSpringRecords("../aoc_inputs/2023/day12input.txt")
 
 	sum := 0
 	for _, record := range records {
@@ -55,7 +55,7 @@ func TestDay12Star2InputExample(t *testing.T) {
 }
 
 func XTestDay12Star2Input(t *testing.T) {
-	records := ReadSpringRecords("day12input.txt")
+	records := ReadSpringRecords("../aoc_inputs/2023/day12input.txt")
 
 	sum := 0
 	for _, record := range records {

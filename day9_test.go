@@ -16,7 +16,7 @@ func TestDay9InputExample(t *testing.T) {
 }
 
 func TestDay9Input(t *testing.T) {
-	readings := ReadOasis("day9input.txt")
+	readings := ReadOasis("../aoc_inputs/2023/day9input.txt")
 
 	res := SumOfPredictions(readings)
 
@@ -32,7 +32,7 @@ func TestDay9Star2InputExample(t *testing.T) {
 }
 
 func TestDay9Star2Input(t *testing.T) {
-	readings := ReadOasis("day9input.txt")
+	readings := ReadOasis("../aoc_inputs/2023/day9input.txt")
 
 	res := SumOfHistory(readings)
 

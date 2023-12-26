@@ -17,7 +17,7 @@ func TestDay11InputExample(t *testing.T) {
 }
 
 func TestDay11Input(t *testing.T) {
-	coords := ReadGalaxies("day11input.txt")
+	coords := ReadGalaxies("../aoc_inputs/2023/day11input.txt")
 	coordsNew := ExpandGalaxy(coords, 1)
 	dists := ComputeDistances(coordsNew)
 	sum := Sum(dists)
@@ -35,7 +35,7 @@ func TestDay11Star2InputExample(t *testing.T) {
 }
 
 func TestDay11Star2Input(t *testing.T) {
-	coords := ReadGalaxies("day11input.txt")
+	coords := ReadGalaxies("../aoc_inputs/2023/day11input.txt")
 	coordsNew := ExpandGalaxy(coords, 1e6-1)
 	dists := ComputeDistances(coordsNew)
 	sum := Sum(dists)

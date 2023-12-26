@@ -15,7 +15,7 @@ func TestDay7InputExample(t *testing.T) {
 }
 
 func TestDay7Input(t *testing.T) {
-	hands := ReadHands("day7input.txt")
+	hands := ReadHands("../aoc_inputs/2023/day7input.txt")
 	win := TotalWinnings(hands)
 
 	fmt.Println("Day 7 result (star 1):", win)
@@ -29,7 +29,7 @@ func TestDay7Star2InputExample(t *testing.T) {
 }
 
 func TestDay7Star2Input(t *testing.T) {
-	hands := ReadHandsJoker("day7input.txt")
+	hands := ReadHandsJoker("../aoc_inputs/2023/day7input.txt")
 	win := TotalWinnings(hands)
 
 	fmt.Println("Day 7 result (star 2):", win)

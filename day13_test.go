@@ -16,7 +16,7 @@ func TestDay13InputExample(t *testing.T) {
 }
 
 func TestDay13Input(t *testing.T) {
-	notes := ReadMirrorNotes("day13input.txt")
+	notes := ReadMirrorNotes("../aoc_inputs/2023/day13input.txt")
 
 	sum := SumMirrors(notes)
 
@@ -32,7 +32,7 @@ func TestDay13Star2InputExample(t *testing.T) {
 }
 
 func TestDay13Star2Input(t *testing.T) {
-	notes := ReadMirrorNotes("day13input.txt")
+	notes := ReadMirrorNotes("../aoc_inputs/2023/day13input.txt")
 
 	sum := SumSmudgeMirrors(notes)
 

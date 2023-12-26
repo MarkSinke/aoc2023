@@ -16,7 +16,7 @@ func TestDay15InputExample(t *testing.T) {
 }
 
 func TestDay15Input(t *testing.T) {
-	instructions := ReadInitInstructions("day15input.txt")
+	instructions := ReadInitInstructions("../aoc_inputs/2023/day15input.txt")
 
 	sum := SumHashes(instructions)
 
@@ -34,7 +34,7 @@ func TestDay15Star2InputExample(t *testing.T) {
 }
 
 func TestDay15Star2Input(t *testing.T) {
-	instructions := ReadInitInstructions("day15input.txt")
+	instructions := ReadInitInstructions("../aoc_inputs/2023/day15input.txt")
 
 	boxes := RunInit(instructions)
 

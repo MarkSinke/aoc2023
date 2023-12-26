@@ -20,7 +20,7 @@ func TestDay25InputExample(t *testing.T) {
 }
 
 func TestDay25Input(t *testing.T) {
-	nodes := ReadComponentGraph("day25input.txt")
+	nodes := ReadComponentGraph("../aoc_inputs/2023/day25input.txt")
 
 	a, b := PartitionGraph(nodes)
 

@@ -16,7 +16,7 @@ func TestDay2Example(t *testing.T) {
 }
 
 func TestDay2Input(t *testing.T) {
-	gameResults := ReadGameResults("day2input.txt")
+	gameResults := ReadGameResults("../aoc_inputs/2023/day2input.txt")
 
 	sum := sumIdsPlayable(gameResults)
 
@@ -44,7 +44,7 @@ func TestDay2ExampleStar2(t *testing.T) {
 }
 
 func TestDay2Star2(t *testing.T) {
-	gameResults := ReadGameResults("day2input.txt")
+	gameResults := ReadGameResults("../aoc_inputs/2023/day2input.txt")
 
 	sum := sumMinPowers(gameResults)
 

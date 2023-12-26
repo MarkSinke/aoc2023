@@ -23,7 +23,7 @@ func ComputeCalibrationSum(t *testing.T, filename string) int {
 }
 
 func TestDay1Input(t *testing.T) {
-	fmt.Printf("Day 1 result (star 1): %d\n", ComputeCalibrationSum(t, "day1input.txt"))
+	fmt.Printf("Day 1 result (star 1): %d\n", ComputeCalibrationSum(t, "../aoc_inputs/2023/day1input.txt"))
 }
 
 func ComputeCalibrationSumWordAware(t *testing.T, filename string) int {
@@ -45,7 +45,7 @@ func TestDay1Example2(t *testing.T) {
 }
 
 func TestDay1InputStar2(t *testing.T) {
-	fmt.Printf("Day 1 result (star 2): %d\n", ComputeCalibrationSumWordAware(t, "day1input.txt"))
+	fmt.Printf("Day 1 result (star 2): %d\n", ComputeCalibrationSumWordAware(t, "../aoc_inputs/2023/day1input.txt"))
 }
 
 func TestReverse(t *testing.T) {

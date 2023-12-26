@@ -36,7 +36,7 @@ func TestDay20InputExample2(t *testing.T) {
 }
 
 func TestDay20Input(t *testing.T) {
-	graph := ReadNetwork("day20input.txt")
+	graph := ReadNetwork("../aoc_inputs/2023/day20input.txt")
 
 	lowSum, highSum := press1000(graph)
 
@@ -44,7 +44,7 @@ func TestDay20Input(t *testing.T) {
 }
 
 func TestDay20Star2Input(t *testing.T) {
-	graph := ReadNetwork("day20input.txt")
+	graph := ReadNetwork("../aoc_inputs/2023/day20input.txt")
 
 	// manual analysis of the particular network shows that tx, dd, nz, and ph
 	// are inverters that feed into the final conjunction ls. Hence these need

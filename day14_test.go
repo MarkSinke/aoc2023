@@ -17,7 +17,7 @@ func TestDay14InputExample(t *testing.T) {
 }
 
 func TestDay14Input(t *testing.T) {
-	rocks := ReadRockPositions("day14input.txt")
+	rocks := ReadRockPositions("../aoc_inputs/2023/day14input.txt")
 
 	TiltNorth(rocks)
 	weight := GetNorthWeight(rocks)
@@ -35,7 +35,7 @@ func TestDay14Star2InputExample(t *testing.T) {
 }
 
 func TestDay14Star2Input(t *testing.T) {
-	rocks := ReadRockPositions("day14input.txt")
+	rocks := ReadRockPositions("../aoc_inputs/2023/day14input.txt")
 
 	SpinOneBillionTimes(rocks)
 	weight := GetNorthWeight(rocks)

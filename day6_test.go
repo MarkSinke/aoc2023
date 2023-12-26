@@ -15,7 +15,7 @@ func TestDay6InputExample(t *testing.T) {
 }
 
 func TestDay6Inpu(t *testing.T) {
-	games := ReadRaceGames("day6input.txt")
+	games := ReadRaceGames("../aoc_inputs/2023/day6input.txt")
 	result := WinCounts(games)
 
 	fmt.Println("Day 6 result (star 1):", result)
@@ -29,7 +29,7 @@ func TestDay6Star2InputExample(t *testing.T) {
 }
 
 func TestDay6Star2Inpu(t *testing.T) {
-	game := ReadRaceGame("day6input.txt")
+	game := ReadRaceGame("../aoc_inputs/2023/day6input.txt")
 	result := WinCount(game)
 
 	fmt.Println("Day 6 result (star 2):", result)

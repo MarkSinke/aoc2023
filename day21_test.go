@@ -20,7 +20,7 @@ func TestDay21InputExample(t *testing.T) {
 }
 
 func TestDay21Input(t *testing.T) {
-	garden, start := ReadGarden("day21input.txt")
+	garden, start := ReadGarden("../aoc_inputs/2023/day21input.txt")
 
 	WalkGarden(garden, start, 64)
 
@@ -30,7 +30,7 @@ func TestDay21Input(t *testing.T) {
 }
 
 func TestDay21Star2Input(t *testing.T) {
-	garden, _ := ReadGarden("day21input.txt")
+	garden, _ := ReadGarden("../aoc_inputs/2023/day21input.txt")
 
 	// for 65 steps, we exacty reach the edge of the original 131x131 grid
 	// (the center is excluded, as it's an odd number), every 131 steps yields a next tile
